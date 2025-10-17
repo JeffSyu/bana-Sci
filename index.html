@@ -1,0 +1,994 @@
+<div id="glowscript" class="glowscript">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link type="text/css" href="https://www.glowscript.org/css/redmond/2.1/jquery-ui.custom.css" rel="stylesheet" />
+<link type="text/css" href="https://www.glowscript.org/css/ide.css" rel="stylesheet" />
+<script type="text/javascript" src="https://www.glowscript.org/lib/jquery/2.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://www.glowscript.org/lib/jquery/2.1/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="https://www.glowscript.org/package/glow.3.0.min.js"></script>
+<script type="text/javascript" src="https://www.glowscript.org/package/RSrun.3.0.min.js"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+
+// START JAVASCRIPT
+;(function() {;
+var RodAnchor, RodRelatePos, drag, ClockRelatePos, ClockAnchor, ClockState, t, tTmp, pause, frameDelay, dt, s;
+async function __main__() {
+"use strict";
+
+    var version, display, vector, print, arange, __name__, type, scene, RS_ls, particleAll, x0All, y0All, Nx, Ny, pause, state, frameDelay, drag, s, dr, dx, dy, O, dt, t, tTmp, Timer, timeRecord, Bp, lastF, nextF, Rcheck, Ccheck, M, trans, Lcheck, Acheck, Speed, F, sliderOmagaText, V, sliderVText, A, sliderAText, debugInfo, particle, x0, y0, X, i, j, L, LA, c, cA, RodAnchor, RodRelatePos, ctrlPlate, ctrlRod, Rod, ClockAnchor, ClockRelatePos, ClockState, clockB1, clockB2, clockTime, clockPause, clockReset, Clock, w, v, a;
+    version = RS_list_decorate([ "3.0", "glowscript" ]);
+    Array.prototype['+'] = function(r) {return this.concat(r)}
+    Array.prototype['*'] = function(r) {return __array_times_number(this, r)}
+    window.__GSlang = "vpython";
+    display = canvas;
+    vector = vec;
+    print = GSprint;
+    arange = range;
+    __name__ = "__main__";
+    type = pytype;
+    scene = canvas();
+    "3";
+    scene.width = 1100;
+    "4";
+    scene.height = 520;
+    "5";
+    scene.range = 18;
+    "6";
+    scene.userspin = false;
+    "7";
+    scene.center = vector(0, 0, 0);
+    "9";
+    particleAll = RS_list_decorate([]);
+    "10";
+    x0All = RS_list_decorate([]);
+    "11";
+    y0All = RS_list_decorate([]);
+    "13";
+    Nx = 100;
+    "14";
+    Ny = 5;
+    "16";
+    pause = false;
+    "17";
+    state = RS_list_decorate([ 1, 0 ]);
+    "18";
+    frameDelay = 1;
+    "19";
+    drag = false;
+    "20";
+    s = vec(0, 0, 0);
+    "22";
+    dr = .5;
+    "23";
+    dx = vec(dr, 0, 0);
+    "24";
+    dy = vec(0, dr, 0);
+    "25";
+    O = dx["*"](Nx)["+"](dy["*"](Ny))["/"](2["-u"]());
+    "26";
+    dt = 1["/"](500);
+    "27";
+    t = 0;
+    "28";
+    tTmp = 0;
+    "29";
+    Timer = new Date;
+    "30";
+    timeRecord = RS_list_decorate([ (await Timer.getTime()), (await Timer.getTime()), null, null, null ]);
+    "34";
+    async function transUpdate(trs) {
+        var RS_ls, ny, i, j;
+        "35";
+        if (trs.checked) {
+            "36";
+            if ((M.index === 0 || typeof M.index === "object" && RS_equals(M.index, 0))) {
+                "37";
+                ny = Ny;
+                "38";
+            } else {
+                "39";
+                ny = 1;
+            }
+            "40";
+            for (var RS_Index0 = 0; RS_Index0["<"](ny); RS_Index0++) {
+                j = RS_Index0;
+                "41";
+                for (var RS_Index1 = 0; RS_Index1["<"](Nx); RS_Index1++) {
+                    i = RS_Index1;
+                    "42";
+                    if (RS_equals(i, round(Nx["/"](2)))) {
+                        "43";
+                        (RS_expr_temp = particleAll[(typeof j === "number" && j["<"](0)) ? particleAll.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i].visible = true;
+                        "44";
+                    } else if (Lcheck.checked && RS_equals(i, round(2["*"](pi)["*"](v)["/"](w)["/"](dx.x)["+"](Nx["/"](2))))) {
+                        "45";
+                        (RS_expr_temp = particleAll[(typeof j === "number" && j["<"](0)) ? particleAll.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i].visible = true;
+                        "46";
+                    } else {
+                        "47";
+                        (RS_expr_temp = particleAll[(typeof j === "number" && j["<"](0)) ? particleAll.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i].visible = false;
+                        "48";
+                    }
+                }
+            }
+        } else if (!(trs.checked) && !(particleAll[0][0].visible)) {
+            "49";
+            if ((M.index === 0 || typeof M.index === "object" && RS_equals(M.index, 0))) {
+                "50";
+                (await visibleFun(0, Ny, true));
+                "51";
+            } else {
+                "52";
+                (await visibleFun(0, 1, true));
+            }
+        }
+    };
+    if (!transUpdate.__argnames__) Object.defineProperties(transUpdate, {
+        __argnames__ : {value: ["trs"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "54";
+    async function NewlablelengthUpdate() {
+        "55";
+        L.text = "波長 : "["+"]("{:1.2f}".format(2["*"](pi)["*"](v)["/"](w)))["+"]("公尺 (m)");
+        "56";
+        if (2["*"](pi)["*"](v)["/"](w)["<"](Nx["*"](dx.mag)["/"](2))) {
+            "57";
+            L.pos.x = .5["*"]((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)]["+"]((RS_expr_temp = x0All[0])[RS_bound_index(round(2["*"](pi)["*"](v)["/"](w)["/"](dx.mag)["+"](Nx["/"](2))), RS_expr_temp)]));
+            "58";
+            if ((M.index === 0 || typeof M.index === "object" && RS_equals(M.index, 0))) {
+                "59";
+                L.pos.y = O.y["-"](dy.y["*"](7));
+                "60";
+                (await setBrakit(c, vec((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)], O.y["-"](dy.y), 0), vec((RS_expr_temp = x0All[0])[RS_bound_index(round(2["*"](pi)["*"](v)["/"](w)["/"](dx.x)["+"](Nx["/"](2))), RS_expr_temp)], O.y["-"](2.5["*"](dy.y)), 0), 0));
+                "61";
+            } else {
+                "62";
+                L.pos.y = O.y["-"](dy.y["*"](7))["-"](a)["+"](1);
+                "63";
+                (await setBrakit(c, vec((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)], O.y["-"](2.5["*"](dy.y))["-"](a)["+"](1), 0), vec((RS_expr_temp = x0All[0])[RS_bound_index(round(2["*"](pi)["*"](v)["/"](w)["/"](dx.x)["+"](Nx["/"](2))), RS_expr_temp)], O.y["-"](4["*"](dy.y))["-"](a)["+"](1), 0), 0));
+                "64";
+            }
+        } else {
+            "65";
+            if ((M.index === 0 || typeof M.index === "object" && RS_equals(M.index, 0))) {
+                "66";
+                L.pos = vec(.5["*"]((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)]["+"]((RS_expr_temp = x0All[0])[RS_bound_index(Nx["-"](1), RS_expr_temp)])), O.y["-"](dy.y["*"](7)), 0);
+                "67";
+                (await setBrakit(c, vec((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)], O.y["-"](dy.y), 0), vec((RS_expr_temp = x0All[0])[RS_bound_index(Nx["-"](1), RS_expr_temp)], O.y["-"](2.5["*"](dy.y)), 0), 0));
+                "68";
+                (await c.modify(3, vec((RS_expr_temp = x0All[0])[RS_bound_index(Nx["-"](1), RS_expr_temp)], O.y["-"](2.5["*"](dy.y)), 0)));
+                "69";
+            } else {
+                "70";
+                L.pos = vec(.5["*"]((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)]["+"]((RS_expr_temp = x0All[0])[RS_bound_index(Nx["-"](1), RS_expr_temp)])), O.y["-"](dy.y["*"](7))["-"](a)["+"](1), 0);
+                "71";
+                (await setBrakit(c, vec((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)], O.y["-"](2.5["*"](dy.y))["-"](a)["+"](1), 0), vec((RS_expr_temp = x0All[0])[RS_bound_index(Nx["-"](1), RS_expr_temp)], O.y["-"](4["*"](dy.y))["-"](a)["+"](1), 0), 0));
+                "72";
+                (await c.modify(3, vec((RS_expr_temp = x0All[0])[RS_bound_index(Nx["-"](1), RS_expr_temp)], O.y["-"](4["*"](dy.y))["-"](a)["+"](1), 0)));
+            }
+        }
+    };
+    if (!NewlablelengthUpdate.__module__) Object.defineProperties(NewlablelengthUpdate, {
+        __module__ : {value: "__main__"}
+    });
+
+    "74";
+    async function NewlableampituteUpdate() {
+        "75";
+        if ((M.index === 0 || typeof M.index === "object" && RS_equals(M.index, 0))) {
+            "76";
+            LA.pos = vec(.5["*"](a), mag(dy)["*"](.5["*"](Ny)["+"](4.5)), 0);
+            "77";
+            (await setBrakit(cA, vec((RS_expr_temp = x0All[RS_bound_index(Ny["-"](1), x0All)])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)], O.y["+"](dy.y["*"](Ny)), 0), vec((RS_expr_temp = x0All[RS_bound_index(Ny["-"](1), x0All)])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)]["+"](a), O.y["+"](dy.y["*"](Ny["+"](1.5))), 0), 0));
+            "78";
+        } else if ((M.index === 1 || typeof M.index === "object" && RS_equals(M.index, 1))) {
+            "79";
+            LA.pos = vec(1.5["-u"]()["-"](3["*"](mag(dx))), (RS_expr_temp = y0All[0])[RS_bound_index(round(Ny["/"](2)), RS_expr_temp)]["+"](.5["*"](a)), 0);
+            "80";
+            (await setBrakit(cA, vec((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)], (RS_expr_temp = y0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)], 0), vec((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)]["-"](dx.x["*"](1.5)), (RS_expr_temp = y0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)]["+"](a), 0), 1));
+            "81";
+        } else if ((M.index === 2 || typeof M.index === "object" && RS_equals(M.index, 2))) {
+            "82";
+            LA.pos = vec(1.5["-u"]()["-"](3["*"](mag(dx))), 0, 0);
+            "83";
+            (await setBrakit(cA, vec((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)], (RS_expr_temp = y0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)], 0), vec((RS_expr_temp = x0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)]["-"](dx.x["*"](1.5)), (RS_expr_temp = y0All[0])[RS_bound_index(round(Nx["/"](2)), RS_expr_temp)]["+"](a), 0), 1));
+        }
+    };
+    if (!NewlableampituteUpdate.__module__) Object.defineProperties(NewlableampituteUpdate, {
+        __module__ : {value: "__main__"}
+    });
+
+    "85";
+    async function setBrakit(obj, pos1, pos2, type) {
+        "86";
+        (await obj.modify(0, vec(pos1.x, pos1.y, 0)));
+        "87";
+        (await obj.modify(1, vec(1["-"](type)["*"](pos1.x)["+"](type["*"](pos2.x)), 1["-"](type)["*"](pos2.y)["+"](type["*"](pos1.y)), 0)));
+        "88";
+        (await obj.modify(2, vec(pos2.x, pos2.y, 0)));
+        "89";
+        (await obj.modify(3, vec(1["-"](type)["*"](pos2.x)["+"](type["*"](pos1.x)), 1["-"](type)["*"](pos1.y)["+"](type["*"](pos2.y)), 0)));
+    };
+    if (!setBrakit.__argnames__) Object.defineProperties(setBrakit, {
+        __argnames__ : {value: ["obj", "pos1", "pos2", "type"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "91";
+    async function updateRod() {
+        var RS_ls, dis;
+        "92";
+        "93";
+        RodAnchor = RodRelatePos["+"](scene.camera.pos);
+        "94";
+        ctrlPlate.pos = RodAnchor;
+        "95";
+        if (!(drag)) {
+            "96";
+            ctrlRod.pos = RodAnchor["+"](vec(0, 0, .1));
+        }
+        "97";
+        dis = ctrlRod.pos["-"](RodAnchor);
+        "98";
+        dis.z = 0;
+        "99";
+        if (dis.mag[">"](.5) && dis.mag["<"](4)) {
+            "100";
+            (await moveScene(dis.hat["*"](.2)));
+        }
+    };
+    if (!updateRod.__module__) Object.defineProperties(updateRod, {
+        __module__ : {value: "__main__"}
+    });
+
+    "102";
+    async function moveScene(d) {
+        "103";
+        "104";
+        scene.camera.pos=scene.camera.pos["+"](d);
+        "105";
+        ctrlRod.pos=ctrlRod.pos["+"](d);
+    };
+    if (!moveScene.__argnames__) Object.defineProperties(moveScene, {
+        __argnames__ : {value: ["d"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "107";
+    async function ClockUpdate() {
+        var RS_ls, Dt;
+        "108";
+        "109";
+        ClockAnchor = scene.camera.pos["+"](ClockRelatePos);
+        "110";
+        clockTime.pos = ClockAnchor["+"](vec(0, 1.25, 0));
+        "111";
+        clockPause.pos = ClockAnchor["+"](vec(1.25, 1.25["-u"](), 0));
+        "112";
+        clockReset.pos = ClockAnchor["+"](vec(1.25["-u"](), 1.25["-u"](), 0));
+        "113";
+        clockB1.pos = ClockAnchor["+"](vec(1.25, 1.25["-u"](), .005));
+        "114";
+        clockB2.pos = ClockAnchor["+"](vec(1.25["-u"](), 1.25["-u"](), .005));
+        "115";
+        if (ClockState) {
+            "116";
+            Dt = (await Date.now())["-"](timeRecord[3])["+"](timeRecord[4]);
+            "117";
+            clockTime.text = "{:1.2f}".format(Dt["/"](1e3));
+        }
+    };
+    if (!ClockUpdate.__module__) Object.defineProperties(ClockUpdate, {
+        __module__ : {value: "__main__"}
+    });
+
+    "119";
+    async function showRod(r) {
+        var RS_ls, i;
+        "120";
+        var RS_Iter2 = Rod;
+        RS_Iter2 = ((typeof RS_Iter2[Symbol.iterator] === "function") ? (RS_Iter2 instanceof Map ? RS_Iter2.keys() : RS_Iter2) : Object.keys(RS_Iter2));
+        for (var RS_Index2 of RS_Iter2) {
+            i = RS_Index2;
+            "121";
+            i.visible = r.checked;
+        }
+    };
+    if (!showRod.__argnames__) Object.defineProperties(showRod, {
+        __argnames__ : {value: ["r"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "123";
+    async function showClock(r) {
+        var RS_ls, i;
+        "124";
+        var RS_Iter3 = Clock;
+        RS_Iter3 = ((typeof RS_Iter3[Symbol.iterator] === "function") ? (RS_Iter3 instanceof Map ? RS_Iter3.keys() : RS_Iter3) : Object.keys(RS_Iter3));
+        for (var RS_Index3 of RS_Iter3) {
+            i = RS_Index3;
+            "125";
+            i.visible = r.checked;
+        }
+    };
+    if (!showClock.__argnames__) Object.defineProperties(showClock, {
+        __argnames__ : {value: ["r"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "127";
+    async function showlableL(r) {
+        "128";
+        L.visible = r.checked;
+        "129";
+        c.visible = r.checked;
+    };
+    if (!showlableL.__argnames__) Object.defineProperties(showlableL, {
+        __argnames__ : {value: ["r"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "131";
+    async function showlableA(r) {
+        "132";
+        LA.visible = r.checked;
+        "133";
+        cA.visible = r.checked;
+    };
+    if (!showlableA.__argnames__) Object.defineProperties(showlableA, {
+        __argnames__ : {value: ["r"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "135";
+    async function pauseB(b) {
+        var RS_ls, Dt;
+        "136";
+        "137";
+        pause = !pause;
+        "139";
+        clockPause.pos = ClockAnchor["+"](vec(1.25, 1.25["-u"](), 0));
+        "140";
+        clockReset.pos = ClockAnchor["+"](vec(1.25["-u"](), 1.25["-u"](), 0));
+        "141";
+        clockB1.pos = ClockAnchor["+"](vec(1.25, 1.25["-u"](), .005));
+        "142";
+        clockB2.pos = ClockAnchor["+"](vec(1.25["-u"](), 1.25["-u"](), .005));
+        "143";
+        if (ClockState) {
+            "144";
+            Dt = (await Date.now())["-"](timeRecord[3])["+"](timeRecord[4]);
+            "145";
+            clockTime.text = "{:1.2f}".format(Dt["/"](1e3));
+        }
+    };
+    if (!pauseB.__argnames__) Object.defineProperties(pauseB, {
+        __argnames__ : {value: ["b"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "147";
+    async function showRod(r) {
+        var RS_ls, i;
+        "148";
+        var RS_Iter4 = Rod;
+        RS_Iter4 = ((typeof RS_Iter4[Symbol.iterator] === "function") ? (RS_Iter4 instanceof Map ? RS_Iter4.keys() : RS_Iter4) : Object.keys(RS_Iter4));
+        for (var RS_Index4 of RS_Iter4) {
+            i = RS_Index4;
+            "149";
+            i.visible = r.checked;
+        }
+    };
+    if (!showRod.__argnames__) Object.defineProperties(showRod, {
+        __argnames__ : {value: ["r"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "151";
+    async function showClock(r) {
+        var RS_ls, i;
+        "152";
+        var RS_Iter5 = Clock;
+        RS_Iter5 = ((typeof RS_Iter5[Symbol.iterator] === "function") ? (RS_Iter5 instanceof Map ? RS_Iter5.keys() : RS_Iter5) : Object.keys(RS_Iter5));
+        for (var RS_Index5 of RS_Iter5) {
+            i = RS_Index5;
+            "153";
+            i.visible = r.checked;
+        }
+    };
+    if (!showClock.__argnames__) Object.defineProperties(showClock, {
+        __argnames__ : {value: ["r"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "155";
+    async function showlableL(r) {
+        "156";
+        L.visible = r.checked;
+        "157";
+        c.visible = r.checked;
+    };
+    if (!showlableL.__argnames__) Object.defineProperties(showlableL, {
+        __argnames__ : {value: ["r"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "159";
+    async function showlableA(r) {
+        "160";
+        LA.visible = r.checked;
+        "161";
+        cA.visible = r.checked;
+    };
+    if (!showlableA.__argnames__) Object.defineProperties(showlableA, {
+        __argnames__ : {value: ["r"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "163";
+    async function pauseB(b) {
+        "164";
+        "165";
+        pause = !pause;
+        "166";
+        if (pause) {
+            "167";
+            b.text = "▶️";
+            "168";
+            tTmp = t;
+            "169";
+            lastF.disabled = false;
+            "170";
+            nextF.disabled = false;
+            "171";
+        } else {
+            "172";
+            b.text = "⏸";
+            "173";
+            timeRecord[1] = (await Date.now());
+            "174";
+            lastF.disabled = true;
+            "175";
+            nextF.disabled = true;
+        }
+    };
+    if (!pauseB.__argnames__) Object.defineProperties(pauseB, {
+        __argnames__ : {value: ["b"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "177";
+    async function lastB(b) {
+        var RS_ls, frameNum;
+        "178";
+        "179";
+        if (pause) {
+            "180";
+            frameNum = RS_list_decorate([ 10, 7.5, 5, 2.5, 1 ]);
+            "181";
+            t=t["-"](dt["*"](frameNum[RS_bound_index(Speed.index, frameNum)]));
+            "182";
+            tTmp=tTmp["-"](dt["*"](frameNum[RS_bound_index(Speed.index, frameNum)]));
+        }
+    };
+    if (!lastB.__argnames__) Object.defineProperties(lastB, {
+        __argnames__ : {value: ["b"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "184";
+    async function nextB(b) {
+        var RS_ls, frameNum;
+        "185";
+        "186";
+        if (pause) {
+            "187";
+            frameNum = RS_list_decorate([ 10, 7.5, 5, 2.5, 1 ]);
+            "188";
+            t=t["+"](dt["*"](frameNum[RS_bound_index(Speed.index, frameNum)]));
+            "189";
+            tTmp=tTmp["+"](dt["*"](frameNum[RS_bound_index(Speed.index, frameNum)]));
+        }
+    };
+    if (!nextB.__argnames__) Object.defineProperties(nextB, {
+        __argnames__ : {value: ["b"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "191";
+    async function waveType(type) {
+        "192";
+        if ((type.index === 0 || typeof type.index === "object" && RS_equals(type.index, 0))) {
+            "193";
+            state[0] = 1;
+            "194";
+            state[1] = 0;
+            "195";
+            (await visibleFun(1, Ny, true));
+            "196";
+        } else if ((type.index === 1 || typeof type.index === "object" && RS_equals(type.index, 1))) {
+            "197";
+            state[0] = 0;
+            "198";
+            state[1] = 1;
+            "199";
+            (await visibleFun(1, Ny, false));
+            "200";
+        } else {
+            "201";
+            state[0] = 1;
+            "202";
+            state[1] = 1;
+            "203";
+            (await visibleFun(1, Ny, false));
+        }
+    };
+    if (!waveType.__argnames__) Object.defineProperties(waveType, {
+        __argnames__ : {value: ["type"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "205";
+    async function animateSpeed(m) {
+        var RS_ls, ltemp, ltempStr, s;
+        "206";
+        "207";
+        ltemp = list(m.selected);
+        "208";
+        ltemp.remove("x");
+        "209";
+        ltempStr = "";
+        "210";
+        var RS_Iter6 = ltemp;
+        RS_Iter6 = ((typeof RS_Iter6[Symbol.iterator] === "function") ? (RS_Iter6 instanceof Map ? RS_Iter6.keys() : RS_Iter6) : Object.keys(RS_Iter6));
+        for (var RS_Index6 of RS_Iter6) {
+            s = RS_Index6;
+            "211";
+            ltempStr=ltempStr["+"](s);
+        }
+        "212";
+        frameDelay = float(ltempStr);
+        "213";
+        tTmp = t;
+        "214";
+        timeRecord[1] = (await Date.now());
+    };
+    if (!animateSpeed.__argnames__) Object.defineProperties(animateSpeed, {
+        __argnames__ : {value: ["m"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "216";
+    async function visibleFun(a, b, bool) {
+        var RS_ls, i, j;
+        "217";
+        for (var RS_Index7 = a; RS_Index7["<"](b); RS_Index7++) {
+            j = RS_Index7;
+            "218";
+            for (var RS_Index8 = 0; RS_Index8["<"](Nx); RS_Index8++) {
+                i = RS_Index8;
+                "219";
+                (RS_expr_temp = particleAll[(typeof j === "number" && j["<"](0)) ? particleAll.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i].visible = bool;
+            }
+        }
+    };
+    if (!visibleFun.__argnames__) Object.defineProperties(visibleFun, {
+        __argnames__ : {value: ["a", "b", "bool"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "221";
+    async function sliderOmaga(s) {
+        "222";
+        sliderOmagaText.text = " 頻率 :"["+"](" {:1.2f}".format(s.value))["+"]("赫茲 (Hz)\n");
+    };
+    if (!sliderOmaga.__argnames__) Object.defineProperties(sliderOmaga, {
+        __argnames__ : {value: ["s"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "224";
+    async function sliderV(s) {
+        "225";
+        sliderVText.text = " 波速 :"["+"](" {:1.2f}".format(s.value))["+"]("公尺/秒 (m/s)\n");
+    };
+    if (!sliderV.__argnames__) Object.defineProperties(sliderV, {
+        __argnames__ : {value: ["s"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "227";
+    async function sliderA(s) {
+        "228";
+        sliderAText.text = " 振幅 :"["+"](" {:1.2f}".format(s.value))["+"]("公尺 (m)\n");
+    };
+    if (!sliderA.__argnames__) Object.defineProperties(sliderA, {
+        __argnames__ : {value: ["s"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "230";
+    async function debugInfoUpdate() {
+        var RS_ls, info;
+        "231";
+        "232";
+        info = "Debug information\nFramerate:"["+"](1["/"](dt))["+"]("\ndt:")["+"]("{:1.5f}".format(dt))["+"]("\nt:")["+"]("{:1.2f}".format(t))["+"]("\ntTmp:")["+"]("{:1.2f}".format(tTmp))["+"]("\nframeDelay:")["+"](frameDelay);
+        "233";
+        debugInfo.text = info;
+    };
+    if (!debugInfoUpdate.__module__) Object.defineProperties(debugInfoUpdate, {
+        __module__ : {value: "__main__"}
+    });
+
+    "236";
+    async function keyEvent(evt) {
+        var RS_ls, s;
+        "237";
+        "238";
+        s = evt.key;
+        "239";
+        if ((evt.event === "keydown" || typeof evt.event === "object" && RS_equals(evt.event, "keydown"))) {
+            "240";
+            if ((s === "p" || typeof s === "object" && RS_equals(s, "p"))) {
+                "241";
+                (await pauseB(Bp));
+                "242";
+            } else if ((s === "[" || typeof s === "object" && RS_equals(s, "["))) {
+                "243";
+                (await lastB(lastF));
+                "244";
+            } else if ((s === "]" || typeof s === "object" && RS_equals(s, "]"))) {
+                "245";
+                (await nextB(nextF));
+                "246";
+            } else if ((s === "right" || typeof s === "object" && RS_equals(s, "right"))) {
+                "247";
+                (await moveScene(vec(.2, 0, 0)));
+                "248";
+            } else if ((s === "left" || typeof s === "object" && RS_equals(s, "left"))) {
+                "249";
+                (await moveScene(vec(.2["-u"](), 0, 0)));
+                "250";
+            } else if ((s === "up" || typeof s === "object" && RS_equals(s, "up"))) {
+                "251";
+                (await moveScene(vec(0, .2, 0)));
+                "252";
+            } else if ((s === "down" || typeof s === "object" && RS_equals(s, "down"))) {
+                "253";
+                (await moveScene(vec(0, .2["-u"](), 0)));
+            }
+        }
+    };
+    if (!keyEvent.__argnames__) Object.defineProperties(keyEvent, {
+        __argnames__ : {value: ["evt"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "255";
+    scene.bind("keydown", keyEvent);
+    "258";
+    async function getobj(evt) {
+        var RS_ls, ObjPicked;
+        "259";
+        "260";
+        ObjPicked = (await scene.mouse.pick());
+        "261";
+        if ((ObjPicked === ctrlRod || typeof ObjPicked === "object" && RS_equals(ObjPicked, ctrlRod))) {
+            "262";
+            drag = true;
+            "263";
+            s = ctrlRod.pos["-"](scene.mouse.pos);
+            "264";
+        } else if ((ObjPicked === clockB1 || typeof ObjPicked === "object" && RS_equals(ObjPicked, clockB1)) && (ClockState === false || typeof ClockState === "object" && RS_equals(ClockState, false))) {
+            "265";
+            if (pause && (timeRecord[3] === null || typeof timeRecord[3] === "object" && RS_equals(timeRecord[3], null))) {
+                "266";
+                pause = true;
+                "267";
+                (await pauseB(Bp));
+            }
+            "268";
+            timeRecord[3] = (await Date.now());
+            "269";
+            clockPause.text = "◼";
+            "270";
+            ClockState = true;
+            "271";
+            Ccheck.disabled = true;
+            "272";
+        } else if ((ObjPicked === clockB1 || typeof ObjPicked === "object" && RS_equals(ObjPicked, clockB1)) && (ClockState === true || typeof ClockState === "object" && RS_equals(ClockState, true))) {
+            "273";
+            clockPause.text = "⯈";
+            "274";
+            timeRecord[4] = float(clockTime.text)["*"](1e3);
+            "275";
+            ClockState = false;
+            "276";
+            Ccheck.disabled = false;
+            "277";
+        } else if ((ObjPicked === clockB2 || typeof ObjPicked === "object" && RS_equals(ObjPicked, clockB2)) && (ClockState === false || typeof ClockState === "object" && RS_equals(ClockState, false))) {
+            "278";
+            RS_splice(timeRecord, RS_list_decorate([ null, null ]), 3, 4);
+            "279";
+            clockTime.text = "0.00";
+        }
+    };
+    if (!getobj.__argnames__) Object.defineProperties(getobj, {
+        __argnames__ : {value: ["evt"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "281";
+    async function moveobj(evt) {
+        var RS_ls, dis;
+        "282";
+        "283";
+        if (drag) {
+            "284";
+            ctrlRod.pos = scene.mouse.pos["+"](s);
+            "285";
+            dis = ctrlRod.pos["-"](RodAnchor);
+            "286";
+            dis.z = 0;
+            "287";
+            if (dis.mag[">="](3.5)) {
+                "288";
+                dis = 3.5["*"](dis.hat);
+                "289";
+                ctrlRod.pos = RodAnchor["+"](dis);
+            }
+        }
+    };
+    if (!moveobj.__argnames__) Object.defineProperties(moveobj, {
+        __argnames__ : {value: ["evt"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "291";
+    async function leaseobj(evt) {
+        "292";
+        "293";
+        drag = false;
+        "295";
+        s = vec(0, 0, 0);
+    };
+    if (!leaseobj.__argnames__) Object.defineProperties(leaseobj, {
+        __argnames__ : {value: ["evt"]},
+        __module__ : {value: "__main__"}
+    });
+
+    "297";
+    scene.bind("mousedown", getobj);
+    "298";
+    scene.bind("mousemove", moveobj);
+    "299";
+    scene.bind("mouseup", leaseobj);
+    "302";
+    RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "\n  按下P鍵暫停/播放   [ / ] 鍵上/下一動作   "})]);
+    "303";
+    Bp = RS_interpolate_kwargs.call(this, button, [RS_desugar_kwargs({bind: pauseB, text: "⏸"})]);
+    "304";
+    lastF = RS_interpolate_kwargs.call(this, button, [RS_desugar_kwargs({bind: lastB, text: "⏮", disabled: true})]);
+    "305";
+    nextF = RS_interpolate_kwargs.call(this, button, [RS_desugar_kwargs({bind: nextB, text: "⏭", disabled: true})]);
+    "306";
+    RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "\n  方向鍵或長按並滑動搖桿移動視角   "})]);
+    "307";
+    Rcheck = RS_interpolate_kwargs.call(this, radio, [RS_desugar_kwargs({bind: showRod, text: "搖桿  "})]);
+    "308";
+    Ccheck = RS_interpolate_kwargs.call(this, radio, [RS_desugar_kwargs({bind: showClock, text: "碼表  "})]);
+    "309";
+    RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "\n  選擇波形 : "})]);
+    "310";
+    M = RS_interpolate_kwargs.call(this, menu, [RS_desugar_kwargs({choices: RS_list_decorate([ "縱波", "橫波", "混合" ]), bind: waveType})]);
+    "312";
+    RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "     "})]);
+    "313";
+    trans = RS_interpolate_kwargs.call(this, radio, [RS_desugar_kwargs({bind: transUpdate, text: "隱藏白珠   "})]);
+    "314";
+    Lcheck = RS_interpolate_kwargs.call(this, radio, [RS_desugar_kwargs({bind: showlableL, text: "顯示波長   "})]);
+    "315";
+    Acheck = RS_interpolate_kwargs.call(this, radio, [RS_desugar_kwargs({bind: showlableA, text: "顯示振幅   "})]);
+    "317";
+    RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "     播放速度"})]);
+    "318";
+    Speed = RS_interpolate_kwargs.call(this, menu, [RS_desugar_kwargs({choices: RS_list_decorate([ "x1", "x0.75", "x0.5", "x0.25", "x0.1" ]), bind: animateSpeed})]);
+    "320";
+    RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "\n\n"})]);
+    "321";
+    F = RS_interpolate_kwargs.call(this, slider, [RS_desugar_kwargs({min: 0, max: 10, value: 3, length: 500, bind: sliderOmaga, right: 20})]);
+    "322";
+    sliderOmagaText = RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: " 頻率 :"["+"](" {:1.2f}".format(F.value))["+"]("赫茲 (Hz)\n")})]);
+    "323";
+    RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "\n"})]);
+    "324";
+    V = RS_interpolate_kwargs.call(this, slider, [RS_desugar_kwargs({min: 0, max: 50, value: 30, length: 500, bind: sliderV, right: 20})]);
+    "325";
+    sliderVText = RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: " 波速 :"["+"](" {:1.2f}".format(V.value))["+"]("公尺/秒 (m/s)\n")})]);
+    "326";
+    RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "\n"})]);
+    "327";
+    A = RS_interpolate_kwargs.call(this, slider, [RS_desugar_kwargs({min: 0, max: 5, value: 2.5, length: 500, bind: sliderA, right: 20})]);
+    "328";
+    sliderAText = RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: " 振幅 :"["+"](" {:1.2f}".format(A.value))["+"]("公尺 (m)\n")})]);
+    "330";
+    debugInfo = RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "Debug information"})]);
+    "333";
+    for (var RS_Index9 = 0; RS_Index9["<"](Ny); RS_Index9++) {
+        j = RS_Index9;
+        "334";
+        particle = RS_list_decorate([]);
+        "335";
+        x0 = RS_list_decorate([]);
+        "336";
+        y0 = RS_list_decorate([]);
+        "337";
+        for (var RS_Index10 = 0; RS_Index10["<"](Nx); RS_Index10++) {
+            i = RS_Index10;
+            "338";
+            X = O["+"](i["*"](dx))["+"](j["*"](dy));
+            "339";
+            particle.append(RS_interpolate_kwargs.call(this, sphere, [RS_desugar_kwargs({radius: .2, pos: X, opacity: 1})]));
+            "340";
+            x0.append(particle[(typeof i === "number" && i["<"](0)) ? particle.length["+"](i) : i].pos.x);
+            "341";
+            y0.append(particle[(typeof i === "number" && i["<"](0)) ? particle.length["+"](i) : i].pos.y);
+        }
+        "342";
+        particleAll.append(particle);
+        "343";
+        x0All.append(x0);
+        "344";
+        y0All.append(y0);
+    }
+    "346";
+    L = RS_interpolate_kwargs.call(this, label, [RS_desugar_kwargs({visible: false, pos: vec(0, .25, 0), text: "波長 : ", height: 20, box: false})]);
+    "347";
+    LA = RS_interpolate_kwargs.call(this, label, [RS_desugar_kwargs({visible: false, pos: vec(0, .5["*"](A.value), 0), text: "振幅", height: 20, box: false})]);
+    "348";
+    c = RS_interpolate_kwargs.call(this, curve, [RS_desugar_kwargs({pos: RS_list_decorate([ vec(0, 0, 0), vec(1, 0, 0), vec(0, 1, 0), vec(0, 0, 1) ]), radius: .1, visible: false})]);
+    "349";
+    cA = RS_interpolate_kwargs.call(this, curve, [RS_desugar_kwargs({pos: RS_list_decorate([ vec(0, 0, 0), vec(1, 0, 0), vec(0, 1, 0), vec(0, 0, 1) ]), radius: .1, visible: false})]);
+    "352";
+    RodAnchor = vec(20, 10["-u"](), 0);
+    "353";
+    RodRelatePos = RodAnchor["-"](scene.camera.pos);
+    "354";
+    ctrlPlate = RS_interpolate_kwargs.call(this, sphere, [RS_desugar_kwargs({opacity: .8, size: vec(10, 10, .05), pos: RodAnchor, visible: false})]);
+    "355";
+    ctrlRod = RS_interpolate_kwargs.call(this, sphere, [RS_desugar_kwargs({opacity: 1, size: vec(3, 3, .05), pos: RodAnchor["+"](vec(0, 0, .1)), shininess: 0, visible: false})]);
+    "356";
+    Rod = RS_list_decorate([ ctrlPlate, ctrlRod ]);
+    "359";
+    ClockAnchor = vec(30["-u"](), 13, 0);
+    "360";
+    ClockRelatePos = ClockAnchor["-"](scene.camera.pos);
+    "361";
+    ClockState = false;
+    "362";
+    clockB1 = RS_interpolate_kwargs.call(this, extrusion, [RS_desugar_kwargs({visible: false, color: (await color.gray(.9)), path: RS_list_decorate([ ClockAnchor["+"](vec(1.25, 1.25["-u"](), 0)), ClockAnchor["+"](vec(1.25, 1.25["-u"](), .01)) ]), shape: RS_interpolate_kwargs.call(shapes, shapes.rectangle, [RS_desugar_kwargs({width: 2, height: 2, roundness: .1})])})]);
+    "363";
+    clockB2 = RS_interpolate_kwargs.call(this, extrusion, [RS_desugar_kwargs({visible: false, color: (await color.gray(.9)), path: RS_list_decorate([ ClockAnchor["+"](vec(1.25["-u"](), 1.25["-u"](), 0)), ClockAnchor["+"](vec(1.25["-u"](), 1.25["-u"](), .01)) ]), shape: RS_interpolate_kwargs.call(shapes, shapes.rectangle, [RS_desugar_kwargs({width: 2, height: 2, roundness: .1})])})]);
+    "364";
+    clockTime = RS_interpolate_kwargs.call(this, label, [RS_desugar_kwargs({visible: false, pos: ClockAnchor["+"](vec(0, 1.5, 0)), text: "0.00", height: 22, opacity: 1, border: 5})]);
+    "365";
+    clockPause = RS_interpolate_kwargs.call(this, label, [RS_desugar_kwargs({visible: false, color: color.black, visible: true, pos: ClockAnchor["+"](vec(1.25, 1.25["-u"](), 0)), text: "⯈", height: 20, opacity: 0, box: false})]);
+    "366";
+    clockReset = RS_interpolate_kwargs.call(this, label, [RS_desugar_kwargs({visible: false, color: color.black, visible: true, pos: ClockAnchor["+"](vec(1.25["-u"](), 1.25["-u"](), 0)), text: "↺", height: 20, opacity: 0, box: false})]);
+    "367";
+    Clock = RS_list_decorate([ clockB1, clockB2, clockTime, clockPause, clockReset ]);
+    "370";
+    while (true) {
+        "371";
+        w = F.value["*"](2)["*"](pi);
+        "372";
+        v = V.value;
+        "373";
+        a = A.value;
+        "374";
+        (await rate(1["/"](dt)));
+        "375";
+        if (!pause) {
+            "376";
+            (await updateTime());
+        }
+        "377";
+        (await updateInterface());
+        "378";
+        (await updateBall());
+    }
+    "381";
+    async function updateInterface() {
+        "382";
+        if (Rcheck.checked) {
+            "383";
+            (await updateRod());
+            "384";
+        }
+        if (Lcheck.checked) {
+            "385";
+            (await NewlablelengthUpdate());
+            "386";
+        }
+        if (Acheck.checked) {
+            "387";
+            (await NewlableampituteUpdate());
+            "388";
+        }
+        if (Ccheck.checked) {
+            "389";
+            (await ClockUpdate());
+        }
+        "390";
+        (await transUpdate(trans));
+        "391";
+        (await debugInfoUpdate());
+    };
+    if (!updateInterface.__module__) Object.defineProperties(updateInterface, {
+        __module__ : {value: "__main__"}
+    });
+
+    "393";
+    async function updateTime() {
+        "394";
+        "395";
+        timeRecord[2] = (await Date.now());
+        "396";
+        t = frameDelay["*"](timeRecord[2]["-"](timeRecord[1]))["/"](1e3)["+"](tTmp);
+        "397";
+        if (t[">"](2["*"](pi)["/"](w)["/"](frameDelay))) {
+            "398";
+            t = t["-"](2["*"](pi)["/"](w)["/"](frameDelay));
+            "399";
+            timeRecord[1] = timeRecord[1]["+"](int(2["*"](pi)["/"](w)["/"](frameDelay)["*"](1e3)));
+        }
+    };
+    if (!updateTime.__module__) Object.defineProperties(updateTime, {
+        __module__ : {value: "__main__"}
+    });
+
+    "401";
+    async function updateBall() {
+        var RS_ls, i, j;
+        "402";
+        "403";
+        for (var RS_Index11 = 0; RS_Index11["<"](Ny); RS_Index11++) {
+            j = RS_Index11;
+            "404";
+            for (var RS_Index12 = 0; RS_Index12["<"](Nx); RS_Index12++) {
+                i = RS_Index12;
+                "405";
+                (RS_expr_temp = particleAll[(typeof j === "number" && j["<"](0)) ? particleAll.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i].pos.x = (RS_expr_temp = x0All[(typeof j === "number" && j["<"](0)) ? x0All.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i]["-"](state[0]["*"](a)["*"](cos(w["*"](t)["-"](i["*"](w)["/"](v)["*"](dx.x)))));
+                "406";
+                (RS_expr_temp = particleAll[(typeof j === "number" && j["<"](0)) ? particleAll.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i].pos.y = (RS_expr_temp = y0All[(typeof j === "number" && j["<"](0)) ? y0All.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i]["+"](state[1]["*"](a)["*"](sin(w["*"](t)["-"](i["*"](w)["/"](v)["*"](dx.x)))));
+                "407";
+                if (RS_equals(i, round(Nx["/"](2)))) {
+                    "408";
+                    (RS_expr_temp = particleAll[(typeof j === "number" && j["<"](0)) ? particleAll.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i].color = color.orange;
+                    "409";
+                } else if (RS_equals(i, round(2["*"](pi)["*"](v)["/"](w)["/"](dx.x)["+"](Nx["/"](2)))) && Lcheck.checked) {
+                    "410";
+                    (RS_expr_temp = particleAll[(typeof j === "number" && j["<"](0)) ? particleAll.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i].color = color.magenta;
+                    "411";
+                } else {
+                    "412";
+                    (RS_expr_temp = particleAll[(typeof j === "number" && j["<"](0)) ? particleAll.length["+"](j) : j])[(typeof i === "number" && i["<"](0)) ? RS_expr_temp.length["+"](i) : i].color = color.white;
+                }
+            }
+        }
+    };
+    if (!updateBall.__module__) Object.defineProperties(updateBall, {
+        __module__ : {value: "__main__"}
+    });
+
+};
+if (!__main__.__module__) Object.defineProperties(__main__, {
+    __module__ : {value: "__main__"}
+});
+
+;$(function(){ window.__context = { glowscript_container: $("#glowscript").removeAttr("id") }; __main__() })})()
+// END JAVASCRIPT
+
+//--><!]]></script>
+</div>
