@@ -14,7 +14,7 @@ var RodAnchor, RodRelatePos, drag, ClockRelatePos, ClockAnchor, ClockState, t, t
 async function __main__() {
 "use strict";
 
-    var version, display, vector, print, arange, __name__, type, scene, RS_ls, particleAll, x0All, y0All, Nx, Ny, pause, state, frameDelay, drag, s, dr, dx, dy, O, dt, t, tTmp, Timer, timeRecord, Bp, lastF, nextF, Rcheck, Ccheck, M, trans, Lcheck, Acheck, Speed, F, sliderOmagaText, V, sliderVText, A, sliderAText, debugInfo, particle, x0, y0, X, i, j, L, LA, c, cA, RodAnchor, RodRelatePos, ctrlPlate, ctrlRod, Rod, ClockAnchor, ClockRelatePos, ClockState, clockB1, clockB2, clockTime, clockPause, clockReset, Clock, w, v, a;
+    var version, display, vector, print, arange, __name__, type, scene, RS_ls, particleAll, x0All, y0All, Nx, Ny, pause, state, frameDelay, drag, s, dr, dx, dy, O, dt, t, tTmp, Timer, timeRecord, Bp, lastF, nextF, Rcheck, Ccheck, M, trans, Lcheck, Acheck, Speed, F, sliderOmagaText, V, sliderVText, A, sliderAText, particle, x0, y0, X, i, j, L, LA, c, cA, RodAnchor, RodRelatePos, ctrlPlate, ctrlRod, Rod, ClockAnchor, ClockRelatePos, ClockState, clockB1, clockB2, clockTime, clockPause, clockReset, Clock, w, v, a;
     version = RS_list_decorate([ "3.0", "glowscript" ]);
     Array.prototype['+'] = function(r) {return this.concat(r)}
     Array.prototype['*'] = function(r) {return __array_times_number(this, r)}
@@ -812,8 +812,6 @@ async function __main__() {
     A = RS_interpolate_kwargs.call(this, slider, [RS_desugar_kwargs({min: 0, max: 5, value: 2.5, length: 500, bind: sliderA, right: 20})]);
     "328";
     sliderAText = RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: " 振幅 :"["+"](" {:1.2f}".format(A.value))["+"]("公尺 (m)\n")})]);
-    "330";
-    debugInfo = RS_interpolate_kwargs.call(this, wtext, [RS_desugar_kwargs({text: "Debug information"})]);
     "333";
     for (var RS_Index9 = 0; RS_Index9["<"](Ny); RS_Index9++) {
         j = RS_Index9;
@@ -922,8 +920,6 @@ async function __main__() {
         }
         "390";
         (await transUpdate(trans));
-        "391";
-        (await debugInfoUpdate());
     };
     if (!updateInterface.__module__) Object.defineProperties(updateInterface, {
         __module__ : {value: "__main__"}
