@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<style>
+	</style>
+	<title>拋體模擬</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <div id="glowscript" class="glowscript">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link type="text/css" href="https://s3.amazonaws.com/glowscript/css/redmond/2.1/jquery-ui.custom.css" rel="stylesheet" />
+        <link type="text/css" href="https://s3.amazonaws.com/glowscript/css/ide.css" rel="stylesheet" />
+        <script type="text/javascript" src="https://s3.amazonaws.com/glowscript/lib/jquery/2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://s3.amazonaws.com/glowscript/lib/jquery/2.1/jquery-ui.custom.min.js"></script>
+        <script type="text/javascript" src="https://s3.amazonaws.com/glowscript/package/glow.2.7.min.js"></script>
+        <script type="text/javascript" src="https://s3.amazonaws.com/glowscript/package/RSrun.2.7.min.js"></script>
+        <script type="text/javascript">
+
+        // START JAVASCRIPT
+        ;(function() { var __rt=srequire('streamline/lib/callbacks/runtime').runtime(__filename, false),__func=__rt.__func,__cb=__rt.__cb; var RS_modules = {};
+        var m, r, v, theta, Obj, Farrow, Trail, velArrow, virtualBall, dragForce, autoCamera, dt, airD, C, checkArrow;
+        RS_modules.pythonize = {};
+
+        (function() {
+        function strings() {
+            var string_funcs, exclude, name;
+            string_funcs = set("capitalize strip lstrip rstrip islower isupper isspace lower upper swapcase center count endswith startswith find rfind index rindex format join ljust rjust partition rpartition replace split rsplit splitlines zfill".split(" "));
+            if (!arguments.length) {
+            exclude = (function() {
+                var s = RS_set();
+                s.jsset.add("split");
+                s.jsset.add("replace");
+                return s;
+            })(); }
+            else if (arguments[0]) {
+            exclude = Array.prototype.slice.call(arguments); }
+            else {
+            exclude = null; }  ;
+
+            if (exclude) {
+            string_funcs = string_funcs.difference(set(exclude)); } ;
+
+            var RS_Iter0 = RS_Iterable(string_funcs);
+            for (var RS_Index0 = 0; RS_Index0["<"](RS_Iter0.length); RS_Index0++) {
+            name = RS_Iter0[RS_Index0];
+            (RS_expr_temp = String.prototype)[((((typeof name === "number") && name["<"](0))) ? RS_expr_temp.length["+"](name) : name)] = (RS_expr_temp = RS_str.prototype)[((((typeof name === "number") && name["<"](0))) ? RS_expr_temp.length["+"](name) : name)]; }; };  RS_modules.pythonize.strings = strings;
+        })();
+        function main(_) { var version, box, sphere, simple_sphere, cylinder, pyramid, cone, helix, ellipsoid, ring, arrow, compound, display, vector, print, type, scene, RS_ls, O, X, Y, Z, g, airD, C, dragForce, autoCamera, sceneAnchor, local_temp, i, cube, velArrow, virtualBall, dragForceText, autoTrackText, HeigtText, corBall, m, sliderMassText, r, sliderRadiusText, v, sliderVelocityText, theta, sliderThetaText, check_aArrow, check_vArrow, check_opacity, ctrlText, Obj, Farrow, Trail, Pos, checkArrow, dt, __name__, strings, RS_Index1, __this = this;
+        function randomXZ(r, Y) {
+            var RS_ls, v;
+            "22";
+            v = vector.random()["*"](r);
+            "23";
+            v.x = int(v.x);
+            "24";
+            v.y = Y;
+            "25";
+            v.z = int(v.z);
+            "26";
+            return v; };
+
+
+        function setTree(Pos) {
+            var RS_ls, tree_anchor, stem, leave1, leave2, leave3, leave4;
+            "30";
+            tree_anchor = Pos;
+            "31";
+            stem = RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({ size: vector(2, 4, 2), pos: tree_anchor["+"](vector(0, 2, 0)), shininess: 0, texture: "https://i.imgur.com/uQfOTvC.jpg" }),]);
+            "32";
+            leave1 = RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({ size: vector(10, 4, 10), pos: tree_anchor["+"](vector(0, 6, 0)), shininess: 0, texture: "https://i.imgur.com/zP4my64.jpg" }),]);
+            "33";
+            leave2 = RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({ size: vector(6, 2, 6), pos: tree_anchor["+"](vector(0, 9, 0)), shininess: 0, texture: "https://i.imgur.com/3QGr2e7.jpg" }),]);
+            "34";
+            leave3 = RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({ size: vector(6, 2, 2), pos: tree_anchor["+"](vector(0, 11, 0)), shininess: 0, texture: "https://i.imgur.com/3QGr2e7.jpg" }),]);
+            "35";
+            leave4 = RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({ size: vector(2, 2, 6), pos: tree_anchor["+"](vector(0, 11, 0)), shininess: 0, texture: "https://i.imgur.com/3QGr2e7.jpg" }),]); };
+        function cubeList(n, h, w, l) {
+            var RS_ls, temp, i;
+            "47";
+            temp = RS_list_decorate([]);
+            "48";
+            for (var RS_Index2 = 0; RS_Index2["<"](n); RS_Index2++) {
+            i = RS_Index2;
+            "49";
+            temp.append(RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({ length: l, height: h, width: w, opacity: 1, shininess: 0, axis: vector(0, 1, 0), color: vec(0.375, 0.247, 0.143), texture: (function() {
+                var RS_d = { };
+                RS_d["file"] = "https://i.imgur.com/d3PUuUt.jpg";
+                RS_d["place"] = "ends";
+                return RS_d;
+                }).call(this) }),])); };
+
+            "50";
+            return temp; };
+
+
+        function set2DCube(cent, x, y, h, w, l) {
+            var RS_ls, cube, xtemp, o, i;
+            "53";
+            for (var RS_Index3 = 0; RS_Index3["<"](y); RS_Index3++) {
+            i = RS_Index3;
+            "54";
+            cube = cubeList(x, h, w, l);
+            "55";
+            xtemp = 0;
+            "56";
+            var RS_Iter4 = RS_Iterable(cube);
+            for (var RS_Index4 = 0; RS_Index4["<"](RS_Iter4.length); RS_Index4++) {
+                o = RS_Iter4[RS_Index4];
+                "57";
+                o.pos = vector(xtemp["*"](h), 0, i["*"](w))["+"](cent);
+                "58";
+                xtemp = xtemp["+="](1); };
+
+            "59";
+            cube.clear; }; };
+
+        function newObj(m, r, H) {
+            var RS_ls;
+            "69";
+            Obj.append(RS_interpolate_kwargs.call(this, sphere, [RS_desugar_kwargs({ pos: vector(0, r["+"](H), 0), radius: r }),]));
+            "70";
+            Trail.append(RS_interpolate_kwargs.call(this, attach_trail, [Obj[Obj.length["-"](1)],].concat([RS_desugar_kwargs({ radius: 0.08, color: color.blue }),])));
+            "71";
+            Trail[Trail.length["-"](1)].stop();
+            "72";
+            Obj[Obj.length["-"](1)].vel = Obj[Obj.length["-"](1)].accer = O;
+            "73";
+            Obj[Obj.length["-"](1)].mass = m;
+            "74";
+            Obj[Obj.length["-"](1)].opacity = ((check_opacity.checked) ? 0.5 : 1);
+            "75";
+            Obj[Obj.length["-"](1)].play = false;
+            "76";
+            Obj[Obj.length["-"](1)].stop = false; };
+
+
+        function setVirtualPosY(value) {
+            var RS_ls;
+            "79";
+            velArrow.pos.y = virtualBall.pos.y = value; };
+
+
+        function setArrow(o) {
+            var RS_ls, i;
+            "82";
+            Farrow.append(RS_list_decorate([RS_interpolate_kwargs.call(this, attach_arrow, [o,"accer",].concat([RS_desugar_kwargs({ scale: 0.25, shaftwidth: 0.2, headwidth: 0.5, color: color.red }),])),RS_interpolate_kwargs.call(this, attach_arrow, [o,"vel",].concat([RS_desugar_kwargs({ scale: 0.2, shaftwidth: 0.25, headwidth: 0.5, color: color.yellow }),])),]));
+            "83";
+            var RS_Iter5 = RS_Iterable(RS_list_decorate([0,1,]));
+            for (var RS_Index5 = 0; RS_Index5["<"](RS_Iter5.length); RS_Index5++) {
+            i = RS_Iter5[RS_Index5];
+            "84";
+            ((checkArrow[((((typeof i === "number") && i["<"](0))) ? checkArrow.length["+"](i) : i)]) ? (RS_expr_temp = Farrow[Farrow.length["-"](1)])[((((typeof i === "number") && i["<"](0))) ? RS_expr_temp.length["+"](i) : i)].start() : (RS_expr_temp = Farrow[Farrow.length["-"](1)])[((((typeof i === "number") && i["<"](0))) ? RS_expr_temp.length["+"](i) : i)].stop()); }; };  function changeArrow(check) {
+            var RS_ls, j, o;
+            "87";
+            var RS_Iter6 = RS_Iterable(Farrow);
+            for (var RS_Index6 = 0; RS_Index6["<"](RS_Iter6.length); RS_Index6++) {
+            o = RS_Iter6[RS_Index6];
+            "88";
+            var RS_Iter7 = RS_Iterable(RS_list_decorate([0,1,]));
+            for (var RS_Index7 = 0; RS_Index7["<"](RS_Iter7.length); RS_Index7++) {
+                j = RS_Iter7[RS_Index7];
+                "89";
+                ((check[((((typeof j === "number") && j["<"](0))) ? check.length["+"](j) : j)]) ? o[((((typeof j === "number") && j["<"](0))) ? o.length["+"](j) : j)].start() : o[((((typeof j === "number") && j["<"](0))) ? o.length["+"](j) : j)].stop()); }; }; };
+        function changeOpacity(value) {
+            var RS_ls, o;
+            "92";
+            var RS_Iter8 = RS_Iterable(Obj);
+            for (var RS_Index8 = 0; RS_Index8["<"](RS_Iter8.length); RS_Index8++) {
+            o = RS_Iter8[RS_Index8];
+            "93";
+            o.opacity = ((!o.stop) ? value : 0.5); }; };  function setVelocity(o, v, theta) {
+            var RS_ls;
+            "96";
+            o.vel = v["*"](vector(cos(theta), sin(theta), 0)); };
+
+
+        function resetSystem() {
+            var RS_ls;
+            "99";
+            "100";
+            m.value = 10;
+            "101";
+            r.value = 0.5;
+            "102";
+            v.value = 0;
+            "103";
+            theta.value = 0;
+            "104";
+            delSingleObj(velArrow);
+            "105";
+            delSingleObj(virtualBall);
+            "106";
+            velArrow = RS_interpolate_kwargs.call(this, arrow, [RS_desugar_kwargs({ pos: vector(0, 0.5, 0), shaftwidth: 0.25, headwidth: 0.5, opacity: 0.4, color: color.cyan }),]);
+            "107";
+            virtualBall = RS_interpolate_kwargs.call(this, sphere, [RS_desugar_kwargs({ pos: vector(0, 0.5, 0), radius: 0.48, opacity: 0.4, color: color.cyan }),]);
+            "108";
+            sliderMassText.text = " Mass: {:1.2f}".format(m.value)["+"](" kg\n");
+            "109";
+            sliderRadiusText.text = " Radius: {:1.2f}".format(r.value)["+"](" m\n");
+            "110";
+            sliderThetaText.text = " Velocity: {:1.2f}".format(v.value)["+"](" m/s\n");
+            "111";
+            sliderVelocityText.text = " Launch angle: {:1.2f}".format(theta.value)["+"](" degree\n"); };  function cameraMove(v) {
+            var RS_ls, forwardVector, leftVector;
+            "114";
+            forwardVector = norm(v.proj(X)["+"](v.proj(Z)));
+            "115";
+            leftVector = Y.cross(forwardVector);
+            "116";
+            return RS_list_decorate([0.25["*"](forwardVector),0.25["*"](leftVector),]); };
+
+
+        function clearObj(obj) {
+            var RS_ls, o;
+            "120";
+            var RS_Iter9 = RS_Iterable(obj);
+            for (var RS_Index9 = 0; RS_Index9["<"](RS_Iter9.length); RS_Index9++) {
+            o = RS_Iter9[RS_Index9];
+            "121";
+            o.visible = false; };
+
+            "122";
+            obj = RS_list_decorate([]);
+            "123";
+            return obj; };
+
+
+        function clearArrow(obj) {
+            var RS_ls, o;
+            "125";
+            var RS_Iter10 = RS_Iterable(obj);
+            for (var RS_Index10 = 0; RS_Index10["<"](RS_Iter10.length); RS_Index10++) {
+            o = RS_Iter10[RS_Index10];
+            "126";
+            o[0].stop();
+            "127";
+            o[1].stop(); };
+
+            "128";
+            obj = RS_list_decorate([]);
+            "129";
+            return obj; };
+
+
+        function clearTrail(obj) {
+            var RS_ls, o;
+            "131";
+            var RS_Iter11 = RS_Iterable(obj);
+            for (var RS_Index11 = 0; RS_Index11["<"](RS_Iter11.length); RS_Index11++) {
+            o = RS_Iter11[RS_Index11];
+            "132";
+            o.clear(); };
+
+            "133";
+            obj = RS_list_decorate([]);
+            "134";
+            return obj; };
+
+
+        function delSingleObj(obj) {
+            var RS_ls;
+            "136";
+            obj.visible = false;
+            "137";
+            obj = undefined; };
+
+
+        function keyEvent(ev) {
+            var RS_ls;
+            "141";
+            "142";
+            if ((((ev.event === "keydown") || ((typeof ev.event === "object") && RS_equals(ev.event, "keydown"))))) {
+            "143";
+            if (((((ev.key === "n") || ((typeof ev.key === "object") && RS_equals(ev.key, "n")))) && RS_equals(len(Obj), len(Farrow)))) {
+                "144";
+                newObj(m.value, r.value, Pos[1]);
+                "145"; }
+            else if (((((ev.key === "l") || ((typeof ev.key === "object") && RS_equals(ev.key, "l")))) && len(Obj)[">"](len(Farrow)))) {
+                "146";
+                setArrow(Obj[Obj.length["-"](1)]);
+                "147";
+                Trail[Trail.length["-"](1)].start();
+                "148";
+                Obj[Obj.length["-"](1)].play = true;
+                "149";
+                setVelocity(Obj[Obj.length["-"](1)], v.value, pi["*"](theta.value)["/"](180));
+                "150"; }
+            else if ((((ev.key === "c") || ((typeof ev.key === "object") && RS_equals(ev.key, "c"))))) {
+                "151";
+                Obj = clearObj(Obj);
+                "152";
+                Farrow = clearArrow(Farrow);
+                "153";
+                Trail = clearTrail(Trail);
+                "154"; }
+            else if ((((ev.key === "f") || ((typeof ev.key === "object") && RS_equals(ev.key, "f"))))) {
+                "155";
+                dragForce = !dragForce;
+                "156"; }
+            else if ((((ev.key === "t") || ((typeof ev.key === "object") && RS_equals(ev.key, "t"))))) {
+                "157";
+                autoCamera = !autoCamera;
+                "158"; }
+            else if (((((ev.key === "w") || ((typeof ev.key === "object") && RS_equals(ev.key, "w")))) && !autoCamera)) {
+                "159";
+                scene.center = scene.center["+="](cameraMove(scene.forward)[0]);
+                "160"; }
+            else if (((((ev.key === "s") || ((typeof ev.key === "object") && RS_equals(ev.key, "s")))) && !autoCamera)) {
+                "161";
+                scene.center = scene.center["-="](cameraMove(scene.forward)[0]);
+                "162"; }
+            else if (((((ev.key === "a") || ((typeof ev.key === "object") && RS_equals(ev.key, "a")))) && !autoCamera)) {
+                "163";
+                scene.center = scene.center["+="](cameraMove(scene.forward)[1]);
+                "164"; }
+            else if (((((ev.key === "d") || ((typeof ev.key === "object") && RS_equals(ev.key, "d")))) && !autoCamera)) {
+                "165";
+                scene.center = scene.center["-="](cameraMove(scene.forward)[1]);
+                "166"; }
+            else if ((((ev.key === "=") || ((typeof ev.key === "object") && RS_equals(ev.key, "="))))) {
+                "167";
+                Pos[1] = Pos[1]["+="](0.01);
+                "168"; }
+            else if ((((ev.key === "+") || ((typeof ev.key === "object") && RS_equals(ev.key, "+"))))) {
+                "169";
+                Pos[1] = Pos[1]["+="](0.5);
+                "170"; }
+            else if ((((ev.key === "-") || ((typeof ev.key === "object") && RS_equals(ev.key, "-"))))) {
+                "171";
+                Pos[1] = Pos[1]["-="](0.01);
+                "172"; }
+            else if ((((ev.key === "_") || ((typeof ev.key === "object") && RS_equals(ev.key, "_"))))) {
+                "173";
+                Pos[1] = Pos[1]["-="](0.5);
+                "174"; }
+            else if ((((ev.key === "r") || ((typeof ev.key === "object") && RS_equals(ev.key, "r"))))) {
+                "175";
+                Pos[1] = 0;
+                "176";
+                scene.center = vector(0, 0.5, 0);
+                "177"; }
+            else if ((((ev.key === "R") || ((typeof ev.key === "object") && RS_equals(ev.key, "R"))))) {
+                "178";
+                scene.center = vector(0, 0.5, 0);
+                "179";
+                Pos[1] = 0;
+                "180";
+                resetSystem();
+                "181";
+                Obj = clearObj(Obj);
+                "182";
+                Farrow = clearArrow(Farrow);
+                "183";
+                Trail = clearTrail(Trail); }               ; } ; };
+
+
+        function sliderMass(s) {
+            var RS_ls;
+            "195";
+            sliderMassText.text = " Mass:"["+"](" {:1.3f}".format(s.value))["+"](" kg\n"); };
+
+
+        function sliderRadius(s) {
+            var RS_ls;
+            "200";
+            sliderRadiusText.text = " Radius: {:1.3f}".format(s.value)["+"](" m\n");
+            "201";
+            virtualBall.radius = s.value["*"](0.95); };
+
+
+        function sliderVelocity(s) {
+            var RS_ls;
+            "206";
+            sliderVelocityText.text = " Velocity: {:1.2f}".format(s.value)["+"](" m/s\n");
+            "207";
+            velArrow.length = 0.5["+"](s.value["*"](0.2)); };
+
+
+        function sliderTheta(s) {
+            var RS_ls, theta;
+            "212";
+            sliderThetaText.text = " Launch angle: {:1.3f}".format(s.value)["+"](" degree\n");
+            "213";
+            theta = s.value["*"](pi)["/"](180);
+            "214";
+            velArrow.axis = vector(cos(theta), sin(theta), 0)["*"](velArrow.length); };
+
+
+        function displayArrow_a(c) {
+            var RS_ls;
+            "220";
+            checkArrow[0] = c.checked;
+            "221";
+            changeArrow(checkArrow); };
+        function displayArrow_v(c) {
+            var RS_ls;
+            "225";
+            checkArrow[1] = c.checked;
+            "226";
+            changeArrow(checkArrow); };
+        function transparent(c) {
+            var RS_ls;
+            "230";
+            ((c.checked) ? changeOpacity(0.5) : changeOpacity(1)); };
+        function update() {
+            var RS_ls, sw, n, obj, trail, K, i;
+            "245";
+            "246";
+            sw = ((dragForce) ? 1 : 0);
+            "247";
+            n = len(Obj);
+            "248";
+            for (var RS_Index12 = 0; RS_Index12["<"](n); RS_Index12++) {
+            i = RS_Index12;
+            "249";
+            obj = Obj[((((typeof i === "number") && i["<"](0))) ? Obj.length["+"](i) : i)];
+            "250";
+            trail = Trail[((((typeof i === "number") && i["<"](0))) ? Trail.length["+"](i) : i)];
+            "251";
+            if ((obj.pos.y["-"](obj.radius)[">="](0) && obj.play)) {
+                "252";
+                K = sw["-u"]()["*"](0.5)["*"](pi)["*"](GS_power(obj.radius, 2))["*"](airD)["*"](C)["*"](mag(obj.vel))["/"](obj.mass);
+                "253";
+                obj.accer = g["-u"]()["+"](K["*"](obj.vel));
+                "254";
+                obj.vel = obj.vel["+"](obj.accer["*"](dt));
+                "255";
+                obj.pos = obj.pos["+"](obj.vel["*"](dt));
+                "256"; }
+            else if ((obj.pos.y["-"](obj.radius)["<"](0) && obj.play)) {
+                "257";
+                obj.play = false;
+                "258";
+                obj.stop = true;
+                "259";
+                obj.vel = obj.accer = O;
+                "260";
+                obj.color = color.red;
+                "261";
+                obj.opacity = 0.4;
+                "262";
+                trail.stop();
+                "263"; }
+            else {
+                "264";
+                continue; }  ; };
+
+
+            "267";
+            setVirtualPosY(r.value["+"](Pos[1]));
+            "270";
+            if (len(Obj)[">"](0)) {
+            "271";
+            if (!((Obj[Obj.length["-"](1)].play || Obj[Obj.length["-"](1)].stop))) {
+                "272";
+                Obj[Obj.length["-"](1)].mass = m.value;
+                "273";
+                Obj[Obj.length["-"](1)].radius = r.value;
+                "274";
+                Obj[Obj.length["-"](1)].pos.y = r.value["+"](Pos[1]); } ; } ;
+
+
+            "277";
+            if ((autoCamera && len(Obj)[">"](0))) {
+            "278";
+            scene.center = ((((Obj[Obj.length["-"](1)].play !== Obj[Obj.length["-"](1)].stop) && (((typeof Obj[Obj.length["-"](1)].play !== "object") || RS_not_equals(Obj[Obj.length["-"](1)].play, Obj[Obj.length["-"](1)].stop))))) ? Obj[Obj.length["-"](1)].pos : virtualBall.pos);
+            "279"; }
+            else if ((autoCamera && RS_equals(len(Obj), 0))) {
+            "280";
+            scene.center = virtualBall.pos; }  ;
+
+            "283";
+            HeigtText.text = "     Initial height:{:1.2f}\n".format(virtualBall.pos.y);
+            "284";
+            dragForceText.text = ((dragForce) ? "  Drag Force: ON " : "  Drag Force: OFF");
+            "285";
+            autoTrackText.text = ((autoCamera) ? "      Autotrack: ON " : "      Autotrack: OFF");
+            "286";
+            if (n[">"](0)) {
+            "287";
+            corBall.text = "  Latest Pos: {:1.3f},".format(Obj[RS_bound_index(n["-"](1), Obj)].pos.x)["+"](" {:1.3f}\n".format(Obj[RS_bound_index(n["-"](1), Obj)].pos.y)); } ; }; var __frame = { name: "main", line: 33 }; return __func(_, this, arguments, main, 0, __frame, function __$main() { version = RS_list_decorate(["2.7","glowscript",]); Array.prototype["+"] = function(r) { return this.concat(r); }; Array.prototype["*"] = function(r) { return __array_times_number(this, r); }; __name__ = "__main__"; window.__GSlang = "vpython"; box = vp_box; sphere = vp_sphere; simple_sphere = vp_simple_sphere; cylinder = vp_cylinder; pyramid = vp_pyramid; cone = vp_cone; helix = vp_helix; ellipsoid = vp_ellipsoid; ring = vp_ring; arrow = vp_arrow; compound = vp_compound; display = canvas; vector = vec; print = GSprint; type = pytype; scene = canvas(); strings = RS_modules.pythonize.strings; strings(); "3"; O = vector(0, 0, 0); "4"; X = vector(1, 0, 0); "5"; Y = vector(0, 1, 0); "6"; Z = vector(0, 0, 1); "7"; g = vector(0, 9.8, 0); "8"; airD = 1.22; "9"; C = 0.47; "10"; dragForce = true; "11"; autoCamera = false; "13"; scene.width = 1490; "14"; scene.height = 650; "15"; scene.range = 18; "16"; scene.center = vector(0, 0.5, 0); "17"; scene.background = vector(0.722, 0.8, 0.943); "18"; scene.light = RS_list_decorate([RS_interpolate_kwargs.call(__this, distant_light, [RS_desugar_kwargs({ direction: vec(1, 1, 1), color: vec(0.587, 0.614, 0.628) }),]),]); "21"; if (!randomXZ.__argnames__) { Object.defineProperties(randomXZ, { __argnames__: { value: ["r","Y",] } }); } ; "29"; if (!setTree.__argnames__) { Object.defineProperties(setTree, { __argnames__: { value: ["Pos",] } }); } ; "37"; sceneAnchor = vector(150["-u"](), 1["-u"](), 15["-u"]()); "38"; for (RS_Index1 = 0; RS_Index1["<"](11); RS_Index1++) { i = RS_Index1; "39"; local_temp = sceneAnchor["+"](vector(30["*"](i), 0, 2)); "40"; setTree(local_temp["+"](randomXZ(13, 1))); "43"; setTree(local_temp["+"](randomXZ(10, 0))); }; "45"; cube = RS_list_decorate([]); "46"; if (!cubeList.__argnames__) { Object.defineProperties(cubeList, { __argnames__: { value: ["n","h","w","l",] } }); } ; "52"; if (!set2DCube.__argnames__) { Object.defineProperties(set2DCube, { __argnames__: { value: ["cent","x","y","h","w","l",] } }); } ; "61"; set2DCube(sceneAnchor, 11, 2, 30, 30, 2); "64"; velArrow = RS_interpolate_kwargs.call(__this, arrow, [RS_desugar_kwargs({ pos: vector(0, 0.5, 0), shaftwidth: 0.25, headwidth: 0.5, opacity: 0.4, color: color.cyan }),]); "65"; virtualBall = RS_interpolate_kwargs.call(__this, sphere, [RS_desugar_kwargs({ pos: vector(0, 0.5, 0), radius: 0.48, opacity: 0.4, color: color.cyan }),]); "68"; if (!newObj.__argnames__) { Object.defineProperties(newObj, { __argnames__: { value: ["m","r","H",] } }); } ; "78"; if (!setVirtualPosY.__argnames__) { Object.defineProperties(setVirtualPosY, { __argnames__: { value: ["value",] } }); } ; "81"; if (!setArrow.__argnames__) { Object.defineProperties(setArrow, { __argnames__: { value: ["o",] } }); } ; "86"; if (!changeArrow.__argnames__) { Object.defineProperties(changeArrow, { __argnames__: { value: ["check",] } }); } ; "91"; if (!changeOpacity.__argnames__) { Object.defineProperties(changeOpacity, { __argnames__: { value: ["value",] } }); } ; "95"; if (!setVelocity.__argnames__) { Object.defineProperties(setVelocity, { __argnames__: { value: ["o","v","theta",] } }); } ; "98"; "113"; if (!cameraMove.__argnames__) { Object.defineProperties(cameraMove, { __argnames__: { value: ["v",] } }); } ; "119"; if (!clearObj.__argnames__) { Object.defineProperties(clearObj, { __argnames__: { value: ["obj",] } }); } ; "124"; if (!clearArrow.__argnames__) { Object.defineProperties(clearArrow, { __argnames__: { value: ["obj",] } }); } ; "130"; if (!clearTrail.__argnames__) { Object.defineProperties(clearTrail, { __argnames__: { value: ["obj",] } }); } ; "135"; if (!delSingleObj.__argnames__) { Object.defineProperties(delSingleObj, { __argnames__: { value: ["obj",] } }); } ; "140"; if (!keyEvent.__argnames__) { Object.defineProperties(keyEvent, { __argnames__: { value: ["ev",] } }); } ; "184"; scene.bind("keydown", keyEvent); "188"; dragForceText = RS_interpolate_kwargs.call(__this, wtext, [RS_desugar_kwargs({ text: "  Drag Force: ON " }),]); "189"; autoTrackText = RS_interpolate_kwargs.call(__this, wtext, [RS_desugar_kwargs({ text: "      Autotrack: OFF" }),]); "190"; HeigtText = RS_interpolate_kwargs.call(__this, wtext, [RS_desugar_kwargs({ text: "     Initial height:0.00\n" }),]); "191"; corBall = RS_interpolate_kwargs.call(__this, wtext, [RS_desugar_kwargs({ text: "  Latest Pos: 0.000, 0.00\n" }),]); "194"; if (!sliderMass.__argnames__) { Object.defineProperties(sliderMass, { __argnames__: { value: ["s",] } }); } ; "196"; m = RS_interpolate_kwargs.call(__this, slider, [RS_desugar_kwargs({ min: 0, max: 50, value: 10, length: 400, bind: sliderMass, right: 20 }),]); "197"; sliderMassText = RS_interpolate_kwargs.call(__this, wtext, [RS_desugar_kwargs({ text: " Mass: {:1.3f}".format(m.value)["+"](" kg\n") }),]); "199"; if (!sliderRadius.__argnames__) { Object.defineProperties(sliderRadius, { __argnames__: { value: ["s",] } }); } ; "202"; r = RS_interpolate_kwargs.call(__this, slider, [RS_desugar_kwargs({ min: 0.05, max: 5.05, value: 0.5, step: 0.005, length: 400, bind: sliderRadius, right: 20 }),]); "203"; sliderRadiusText = RS_interpolate_kwargs.call(__this, wtext, [RS_desugar_kwargs({ text: " Radius: {:1.3f}".format(r.value)["+"](" m\n") }),]); "205"; if (!sliderVelocity.__argnames__) { Object.defineProperties(sliderVelocity, { __argnames__: { value: ["s",] } }); } ; "208"; v = RS_interpolate_kwargs.call(__this, slider, [RS_desugar_kwargs({ min: 0, max: 100, value: 0, length: 400, bind: sliderVelocity, right: 20 }),]); "209"; sliderVelocityText = RS_interpolate_kwargs.call(__this, wtext, [RS_desugar_kwargs({ text: " Velocity: {:1.2f}".format(v.value)["+"](" m/s\n") }),]); "211"; if (!sliderTheta.__argnames__) { Object.defineProperties(sliderTheta, { __argnames__: { value: ["s",] } }); } ; "215"; theta = RS_interpolate_kwargs.call(__this, slider, [RS_desugar_kwargs({ min: 180["-u"](), max: 180, value: 0, step: 0.01, length: 400, bind: sliderTheta, right: 20 }),]); "216"; sliderThetaText = RS_interpolate_kwargs.call(__this, wtext, [RS_desugar_kwargs({ text: " Launch angle: {:1.3f}".format(theta.value)["+"](" degree\n") }),]); "219"; if (!displayArrow_a.__argnames__) { Object.defineProperties(displayArrow_a, { __argnames__: { value: ["c",] } }); } ; "222"; check_aArrow = RS_interpolate_kwargs.call(__this, checkbox, [RS_desugar_kwargs({ bind: displayArrow_a, text: "Force display    " }),]); "224"; if (!displayArrow_v.__argnames__) { Object.defineProperties(displayArrow_v, { __argnames__: { value: ["c",] } }); } ; "227"; check_vArrow = RS_interpolate_kwargs.call(__this, checkbox, [RS_desugar_kwargs({ bind: displayArrow_v, text: "Velocity display    " }),]); "229"; if (!transparent.__argnames__) { Object.defineProperties(transparent, { __argnames__: { value: ["c",] } }); } ; "231"; check_opacity = RS_interpolate_kwargs.call(__this, checkbox, [RS_desugar_kwargs({ bind: transparent, text: "Transparent\n" }),]); "233"; ctrlText = RS_interpolate_kwargs.call(__this, wtext, [RS_desugar_kwargs({ text: " (N) create New ball\n (L) Launch the ball\n (F) switch drag Force\n (C) Clear all objects\n (=,-) adjest initial height\n (W,A,S,D) move camera\n (R) Reset\n (T) auto-track\n" }),]); "236"; Obj = RS_list_decorate([]); "237"; Farrow = RS_list_decorate([]); "238"; Trail = RS_list_decorate([]); "239"; Pos = RS_list_decorate([0,0,]); "240"; checkArrow = RS_list_decorate([false,false,]); "243";    "290";
+            dt = 1["/"](500);
+            "291"; return (function ___(__break) { var __more; var __loop = __cb(_, __frame, 0, 0, function __$main() { __more = false;
+                var __1 = true; if (__1) {
+                "292";
+                return rate(1["/"](dt), __cb(_, __frame, 682, 8, function __$main() {
+                    "293";
+                    update(); while (__more) { __loop(); }; __more = true; }, true)); } else { __break(); } ; }); do { __loop(); } while (__more); __more = true; })(_); });};
+
+
+        if (!main.__argnames__) { Object.defineProperties(main, {
+            __argnames__: { value: ["_",] } });};
+
+        ;$(function(){ window.__context = { glowscript_container: $("#glowscript").removeAttr("id") }; main(__func) })})()
+        // END JAVASCRIPT
+
+        </script>
+    </div>
+</body>
+</html>
