@@ -23,6 +23,14 @@
       color: #555;
       font-size: 18px;
     }
+    .drop-box .drop-box {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }    
+    .drop-box.active .drop-box {
+      max-height: 100px; /* 或其他合適的高度 */
+    }
     a {
       display: inline-block;
       margin-top: 20px;
@@ -39,8 +47,25 @@
   </style>
 </head>
 <body>
-  <h1>Banana Science</h1>
-  <p>歡迎來到香蕉老師的教學分享平台</p>
-  <a href="wave.html">波動模擬</a>
+  <div>
+    <h1>Banana Science</h1>
+    <p>歡迎來到香蕉老師的教學分享平台</p>
+  </div>
+  <div class="drop-box">
+    <div class="drop-header" onclick="toggleDB(this)" >
+      <p>VPython模擬動畫</p>
+    </div>
+    <div class="drop-content" id="vpython_ani">
+      <a href="wave.html">波動模擬</a>
+      <a href="projectile.html">拋體模擬</a>
+    </div>
+  </div>
+  <script>
+    function toggleDB(header) {
+      const content = header.nextElementSibling;
+      const section = header.parentElement;
+      section.classList.toggle('active');
+    }
+  </script>
 </body>
 </html>
