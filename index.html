@@ -24,39 +24,49 @@
       font-size: 18px;
     }
     .drop-header {
+      margin-bottom: 0px;
+      padding: 10px;
       background-color: #eee;
       color: #444;
       cursor: pointer;
-      padding: 18px;
-      width: 100%;
       text-align: left;
       border: none;
       outline: none;
-      transition: 0.4s;
+      transition: 0.7s;
     }
     .drop-header.active, .drop-header:hover {
       background-color: #ccc;
     }
-    .drop-content {
-      width: 100%;
-      padding: 0 18px;
-      background-color: white;
-      display: none;
-      flex-dirction: column;
-      align-items: flex-end;
+    .drop-header:after {
+        content: '\02795'; /* Unicode character for "plus" sign (+) */
+        font-size: 13px;
+        color: #575757;
+        float: right;
+        margin-left: 5px;
     }
-    a {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 12px 24px;
-      background-color: #0078d7;
-      color: white;
+    .active:after {
+        content: "\2796"; /* Unicode character for "minus" sign (-) */
+    }
+    .drop-content {
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease-out;
+    }
+    .tool {
+      width: 100%;
+      padding: 10px;
+      background-color: white;
+      color: #221122;
+      text-align: start;
       text-decoration: none;
-      border-radius: 6px;
       transition: background-color 0.3s;
     }
-    a:hover {
-      background-color: #005a9e;
+    .tool:hover {
+      background-color: lightgray;
     }
   </style>
 </head>
@@ -66,12 +76,10 @@
     <p>歡迎來到香蕉老師的教學分享平台</p>
   </div>
   <div class="drop-box">
-    <div class="drop-header">
-      <p>VPython模擬動畫</p>
-    </div>
+    <div class="drop-header">VPython模擬動畫</div>
     <div class="drop-content" id="vpython_ani">
-      <a href="wave.html">波動模擬</a>
-      <a href="projectile.html">拋體模擬</a>
+      <div class="tool" href="wave.html">波動模擬</div>
+      <div class="tool" href="projectile.html">拋體模擬</div>
     </div>
   </div>
   <script>
@@ -80,10 +88,10 @@
       acc[i].addEventListener("click", function() {
         this.classList.toggle("active");
         var panel = this.nextElementSibling;
-        if (panel.style.display === "flex") {
-          panel.style.display = "none";
+        if (panel.style.maxHeight) {
+            panel.style.maxHeight = null;
         } else {
-          panel.style.display = "flex";
+            panel.style.maxHeight = panel.scrollHeight + "px";
         }
       });
     }
