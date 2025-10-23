@@ -38,10 +38,12 @@
       background-color: #ccc;
     }
     .drop-content {
+      width: 100%;
       padding: 0 18px;
       background-color: white;
       display: none;
-      overflow: hidden;
+      flex-dirction: column;
+      align-items: flex-end;
     }
     a {
       display: inline-block;
@@ -81,7 +83,7 @@
         if (panel.style.display === "block") {
           panel.style.display = "none";
         } else {
-          panel.style.display = "block";
+          panel.style.display = "flex";
         }
       });
     }
