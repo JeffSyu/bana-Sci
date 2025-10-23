@@ -23,13 +23,25 @@
       color: #555;
       font-size: 18px;
     }
-    .drop-box .drop-box {
-      max-height: 0;
+    .drop-header {
+      background-color: #eee;
+      color: #444;
+      cursor: pointer;
+      padding: 18px;
+      width: 100%;
+      text-align: left;
+      border: none;
+      outline: none;
+      transition: 0.4s;
+    }
+    .drop-header.active, .drop-header:hover {
+      background-color: #ccc;
+    }
+    .drop-content {
+      padding: 0 18px;
+      background-color: white;
+      display: none;
       overflow: hidden;
-      transition: max-height 0.3s ease-out;
-    }    
-    .drop-box.active .drop-box {
-      max-height: 100px; /* 或其他合適的高度 */
     }
     a {
       display: inline-block;
@@ -52,7 +64,7 @@
     <p>歡迎來到香蕉老師的教學分享平台</p>
   </div>
   <div class="drop-box">
-    <div class="drop-header" onclick="toggleDB(this)" >
+    <div class="drop-header">
       <p>VPython模擬動畫</p>
     </div>
     <div class="drop-content" id="vpython_ani">
@@ -61,10 +73,17 @@
     </div>
   </div>
   <script>
-    function toggleDB(header) {
-      const content = header.nextElementSibling;
-      const section = header.parentElement;
-      section.classList.toggle('active');
+    var acc = document.getElementsByClassName("drop-header"); 
+    for (var i = 0; i < acc.length; i++) {
+      acc[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+          panel.style.display = "none";
+        } else {
+          panel.style.display = "block";
+        }
+      });
     }
   </script>
 </body>
