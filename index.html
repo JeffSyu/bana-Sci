@@ -30,6 +30,7 @@
       color: #444;
       cursor: pointer;
       text-align: left;
+      display: flex;
       border: none;
       outline: none;
       transition: 0.7s;
@@ -37,15 +38,13 @@
     .drop-header.active, .drop-header:hover {
       background-color: #ccc;
     }
-    .drop-header:after {
-        content: '\02795'; /* Unicode character for "plus" sign (+) */
-        font-size: 13px;
-        color: #575757;
-        float: right;
-        margin-left: 5px;
+    .drop-header .drop-arrow {
+      align-self: flex-end;
+      transform-origin: 50% 50%;
+      transition: transform 0.3s ease;
     }
-    .active:after {
-        content: "\2796"; /* Unicode character for "minus" sign (-) */
+    .drop-header.active .drop-arrow {
+      transform: rotate(180deg);
     }
     .drop-content {
       background-color: white;
@@ -76,7 +75,12 @@
     <p>歡迎來到香蕉老師的教學分享平台</p>
   </div>
   <div class="drop-box">
-    <div class="drop-header">VPython模擬動畫</div>
+    <div class="drop-header">
+      <span style="width: 95%;">VPython模擬動畫</span>
+      <svg class="drop-arrow" width="24" height="24" viewBox="0 0 24 24" fill="darkgray" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 7C12.2652 7 12.5196 7.10536 12.7071 7.29289L19.7071 14.2929C20.0976 14.6834 20.0976 15.3166 19.7071 15.7071C19.3166 16.0976 18.6834 16.0976 18.2929 15.7071L12 9.41421L5.70711 15.7071C5.31658 16.0976 4.68342 16.0976 4.29289 15.7071C3.90237 15.3166 3.90237 14.6834 4.29289 14.2929L11.2929 7.29289C11.4804 7.10536 11.7348 7 12 7Z" fill="#000000"/>
+      </svg>
+    </div>
     <div class="drop-content" id="vpython_ani">
       <a class="tool" href="wave.html">波動模擬</a>
       <a class="tool" href="projectile.html">拋體模擬</a>
