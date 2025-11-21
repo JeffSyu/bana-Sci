@@ -1,411 +1,458 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Eye, MoveHorizontal, Maximize2, Info, ScanEye } from 'lucide-react';
-
-const EyeOpticsSim = () => {
-  // --- Configuration for Vision Modes ---
-  const VISION_MODES = {
-    normal: {
-      id: 'normal',
-      label: '正常眼 (Normal)',
-      description: '水晶體調節能力正常，可變厚也可變薄，遠近皆可對焦。',
-      minF: 80,
-      maxF: 180,
-      color: 'bg-green-100 text-green-800 border-green-200'
-    },
-    myopia: {
-      id: 'myopia',
-      label: '近視眼 (Myopia)',
-      description: '睫狀肌調節受限，水晶體「無法變薄」(焦距無法變長)。看遠模糊，看近清晰。',
-      minF: 60,
-      maxF: 110, // Max f limited (cannot reach ~150 needed for far objects)
-      color: 'bg-red-100 text-red-800 border-red-200'
-    },
-    hyperopia: {
-      id: 'hyperopia',
-      label: '遠視眼 (Hyperopia)',
-      description: '睫狀肌調節受限，水晶體「無法變厚」(焦距無法變短)。看近模糊，看遠清晰。',
-      minF: 130, // Min f limited (cannot reach ~85 needed for near objects)
-      maxF: 190,
-      color: 'bg-blue-100 text-blue-800 border-blue-200'
-    }
-  };
-
-  // --- State Management ---
-  const [visionMode, setVisionMode] = useState('normal');
-  const [objectDistance, setObjectDistance] = useState(300); 
-  const [focalLength, setFocalLength] = useState(120);
-  
-  // Fixed constants
-  const RETINA_DISTANCE = 200; 
-  const OPTICAL_AXIS_Y = 200;  
-  const LENS_X = 350;          
-  const LENS_RADIUS_Y = 70;    
-  
-  const canvasRef = useRef(null);
-
-  // Handle Mode Switch & Clamp Focal Length
-  const handleModeChange = (modeKey) => {
-    setVisionMode(modeKey);
-    const mode = VISION_MODES[modeKey];
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光學實驗室：眼睛與成像模擬器</title>
     
-    // Clamp current focal length to new limits
-    if (focalLength < mode.minF) setFocalLength(mode.minF);
-    if (focalLength > mode.maxF) setFocalLength(mode.maxF);
-  };
-
-  // --- Physics Calculations ---
-  const calculateImage = () => {
-    const u = objectDistance;
-    const f = focalLength;
+    <!-- 1. 引入 Tailwind CSS (樣式庫) -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    let v = 0;
-    if (u === f) {
-      v = Infinity; 
-    } else {
-      v = (u * f) / (u - f);
-    }
+    <!-- 2. 引入 React 和 ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
-    const m = -v / u;
-    return { v, m };
-  };
+    <!-- 3. 引入 Babel (讓瀏覽器看不懂 JSX) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  const imageInfo = calculateImage();
-  
-  // Determine Vision Status
-  let status = "";
-  let statusColor = "";
-  const tolerance = 5; 
-  
-  if (Math.abs(imageInfo.v - RETINA_DISTANCE) <= tolerance) {
-    status = "影像清晰 (Clear Vision)";
-    statusColor = "text-green-600";
-  } else if (imageInfo.v < RETINA_DISTANCE && imageInfo.v > 0) {
-    status = "成像於視網膜前 (Blurry)";
-    statusColor = "text-red-600";
-  } else if (imageInfo.v > RETINA_DISTANCE || imageInfo.v < 0) {
-    status = "成像於視網膜後 (Blurry)";
-    statusColor = "text-blue-600";
-  }
+    <style>
+        body { font-family: 'Microsoft JhengHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
 
-  // --- Canvas Rendering ---
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
+    <!-- 4. 主要程式碼區域 -->
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-    ctx.clearRect(0, 0, width, height);
-    
-    const drawArrow = (fromX, fromY, toX, toY, color, width = 2) => {
-      ctx.beginPath();
-      ctx.moveTo(fromX, fromY);
-      ctx.lineTo(toX, toY);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = width;
-      ctx.stroke();
+        // --- 圖示元件 (取代 lucide-react 依賴) ---
+        const Eye = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        );
+        const MoveHorizontal = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="18 8 22 12 18 16"/><polyline points="6 8 2 12 6 16"/><line x1="2" x2="22" y1="12" y2="12"/></svg>
+        );
+        const Maximize2 = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>
+        );
+        const Info = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        );
+        const ScanEye = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M5 12s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+        );
 
-      const headlen = 10;
-      const angle = Math.atan2(toY - fromY, toX - fromX);
-      ctx.beginPath();
-      ctx.moveTo(toX, toY);
-      ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
-      ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
-      ctx.fillStyle = color;
-      ctx.fill();
-    };
+        // --- 主程式元件 ---
+        const EyeOpticsSim = () => {
+            // --- Configuration for Vision Modes ---
+            const VISION_MODES = {
+                normal: {
+                id: 'normal',
+                label: '正常眼 (Normal)',
+                description: '水晶體調節能力正常，可變厚也可變薄，遠近皆可對焦。',
+                minF: 80,
+                maxF: 180,
+                color: 'bg-green-100 text-green-800 border-green-200'
+                },
+                myopia: {
+                id: 'myopia',
+                label: '近視眼 (Myopia)',
+                description: '睫狀肌調節受限，水晶體「無法變薄」(焦距無法變長)。看遠模糊，看近清晰。',
+                minF: 60,
+                maxF: 110, // Max f limited (cannot reach ~150 needed for far objects)
+                color: 'bg-red-100 text-red-800 border-red-200'
+                },
+                hyperopia: {
+                id: 'hyperopia',
+                label: '遠視眼 (Hyperopia)',
+                description: '睫狀肌調節受限，水晶體「無法變厚」(焦距無法變短)。看近模糊，看遠清晰。',
+                minF: 130, // Min f limited (cannot reach ~85 needed for near objects)
+                maxF: 190,
+                color: 'bg-blue-100 text-blue-800 border-blue-200'
+                }
+            };
 
-    const drawPoint = (x, y, label, color = "#333") => {
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.fillStyle = "#333";
-      ctx.font = "14px Arial";
-      ctx.fillText(label, x - 5, y + 20);
-    };
-
-    // 1. Draw Principal Axis
-    ctx.beginPath();
-    ctx.setLineDash([5, 5]);
-    ctx.moveTo(0, OPTICAL_AXIS_Y);
-    ctx.lineTo(width, OPTICAL_AXIS_Y);
-    ctx.strokeStyle = "#9CA3AF";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = "#6B7280";
-    ctx.fillText("主軸", 10, OPTICAL_AXIS_Y - 5);
-
-    // 2. Draw Eye Structure
-    ctx.beginPath();
-    ctx.arc(LENS_X + RETINA_DISTANCE/2, OPTICAL_AXIS_Y, RETINA_DISTANCE * 0.8, -0.5, Math.PI + 0.5, false);
-    ctx.strokeStyle = "#CBD5E1";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Retina
-    ctx.beginPath();
-    ctx.moveTo(LENS_X + RETINA_DISTANCE, OPTICAL_AXIS_Y - 100);
-    ctx.quadraticCurveTo(LENS_X + RETINA_DISTANCE - 20, OPTICAL_AXIS_Y, LENS_X + RETINA_DISTANCE, OPTICAL_AXIS_Y + 100);
-    ctx.strokeStyle = "#EF4444";
-    ctx.lineWidth = 4;
-    ctx.stroke();
-    ctx.fillStyle = "#EF4444";
-    ctx.font = "bold 14px Arial";
-    ctx.fillText("視網膜", LENS_X + RETINA_DISTANCE + 10, OPTICAL_AXIS_Y);
-
-    // 3. Draw Lens
-    const lensThickness = Math.max(10, 40 - (focalLength / 10));
-    ctx.beginPath();
-    ctx.ellipse(LENS_X, OPTICAL_AXIS_Y, lensThickness, LENS_RADIUS_Y, 0, 0, 2 * Math.PI);
-    ctx.fillStyle = "rgba(147, 197, 253, 0.5)";
-    ctx.fill();
-    ctx.strokeStyle = "#3B82F6";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    
-    drawPoint(LENS_X, OPTICAL_AXIS_Y, "O", "#1D4ED8");
-    drawPoint(LENS_X + focalLength, OPTICAL_AXIS_Y, "F", "#9333EA");
-    drawPoint(LENS_X - focalLength, OPTICAL_AXIS_Y, "F'", "#9333EA");
-
-    // 4. Draw Object
-    const objHeight = 60;
-    const objX = LENS_X - objectDistance;
-    drawArrow(objX, OPTICAL_AXIS_Y, objX, OPTICAL_AXIS_Y - objHeight, "#10B981", 4);
-    ctx.fillStyle = "#10B981";
-    ctx.fillText("物體", objX - 15, OPTICAL_AXIS_Y + 20);
-
-    // 5. Ray Tracing
-    const rayColor = "rgba(234, 179, 8, 0.8)";
-    const rayYStart = OPTICAL_AXIS_Y - objHeight;
-    
-    // Ray 1: Parallel -> F
-    if (Math.abs(rayYStart - OPTICAL_AXIS_Y) <= LENS_RADIUS_Y) {
-      ctx.beginPath();
-      ctx.moveTo(objX, rayYStart);
-      ctx.lineTo(LENS_X, rayYStart);
-      const slope1 = (OPTICAL_AXIS_Y - rayYStart) / focalLength;
-      const endX1 = LENS_X + RETINA_DISTANCE + 50; 
-      const endY1 = rayYStart + slope1 * (endX1 - LENS_X);
-      ctx.lineTo(endX1, endY1);
-      ctx.strokeStyle = rayColor;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-
-    // Ray 2: Through Center
-    ctx.beginPath();
-    ctx.moveTo(objX, rayYStart);
-    const slope2 = (OPTICAL_AXIS_Y - rayYStart) / (LENS_X - objX);
-    const endX2 = LENS_X + RETINA_DISTANCE + 50;
-    const endY2 = OPTICAL_AXIS_Y + slope2 * (endX2 - LENS_X);
-    ctx.lineTo(endX2, endY2);
-    ctx.strokeStyle = rayColor;
-    ctx.stroke();
-
-    // Ray 3: Through F' -> Parallel
-    if (objectDistance > 0) {
-        const slope3 = (OPTICAL_AXIS_Y - rayYStart) / ((LENS_X - focalLength) - objX);
-        const intersectLensY = rayYStart + slope3 * (LENS_X - objX);
-        
-        if (Math.abs(intersectLensY - OPTICAL_AXIS_Y) <= LENS_RADIUS_Y) {
-          ctx.beginPath();
-          ctx.moveTo(objX, rayYStart);
-          ctx.lineTo(LENS_X, intersectLensY);
-          ctx.lineTo(LENS_X + RETINA_DISTANCE + 50, intersectLensY);
-          ctx.strokeStyle = rayColor;
-          ctx.stroke();
-        }
-    }
-
-    // 6. Image
-    const imgV = imageInfo.v;
-    const imgM = imageInfo.m;
-    
-    if (imgV > 0 && imgV !== Infinity) {
-       const imgX = LENS_X + imgV;
-       const imgH = objHeight * Math.abs(imgM);
-       
-       ctx.globalAlpha = 0.4;
-       drawArrow(imgX, OPTICAL_AXIS_Y, imgX, OPTICAL_AXIS_Y + imgH, "#6366F1");
-       ctx.fillText("實像", imgX, OPTICAL_AXIS_Y + imgH + 15);
-       ctx.globalAlpha = 1.0;
-    }
-
-    // 7. Retina Blur
-    const retinaX = LENS_X + RETINA_DISTANCE;
-    const slope1 = (OPTICAL_AXIS_Y - rayYStart) / focalLength;
-    const yAtRetina1 = rayYStart + slope1 * (retinaX - LENS_X);
-    const yAtRetina2 = OPTICAL_AXIS_Y + slope2 * (retinaX - LENS_X);
-    const blurRadius = Math.abs(yAtRetina1 - yAtRetina2);
-    
-    ctx.beginPath();
-    if (blurRadius < 2) {
-        ctx.fillStyle = "#FFFF00";
-        ctx.arc(retinaX, yAtRetina2, 3, 0, Math.PI*2);
-        ctx.fill();
-    } else {
-        ctx.fillStyle = "rgba(255, 255, 0, 0.3)";
-        ctx.arc(retinaX, (yAtRetina1 + yAtRetina2)/2, blurRadius, 0, Math.PI*2);
-        ctx.fill();
-        ctx.strokeStyle = "#FFFF00";
-        ctx.stroke();
-    }
-
-  }, [objectDistance, focalLength, imageInfo]);
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
-      <div className="max-w-6xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden">
-        
-        <div className="bg-indigo-600 p-6 text-white flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Eye className="w-8 h-8" />
-              光學實驗室：眼睛與成像模擬
-            </h1>
-            <p className="text-indigo-100 mt-1">選擇不同視力模式，觀察對焦能力的差異。</p>
-          </div>
-          <div className="flex items-center gap-4 bg-indigo-700 px-4 py-2 rounded-lg">
-            <div className="font-mono text-sm">
-                <div>u (物距) = {objectDistance}mm</div>
-                <div>f (焦距) = {focalLength}mm</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
-          
-          {/* Left: Canvas */}
-          <div className="lg:col-span-2 p-4 bg-gray-100 border-r border-gray-200 overflow-hidden flex flex-col items-center justify-center">
-             <canvas 
-                ref={canvasRef} 
-                width={800} 
-                height={400} 
-                className="bg-white rounded shadow-sm w-full max-w-[800px]"
-             />
-             <div className="mt-4 text-center h-16">
-                <h3 className={`text-xl font-bold ${statusColor}`}>
-                   {status}
-                </h3>
-                <p className="text-gray-500 text-sm mt-1">
-                   {Math.abs(imageInfo.v - RETINA_DISTANCE) <= 5 
-                     ? "大腦接收到清晰影像" 
-                     : "大腦接收到模糊影像"}
-                </p>
-             </div>
-          </div>
-
-          {/* Right: Controls */}
-          <div className="p-6 bg-white flex flex-col gap-6">
+            // --- State Management ---
+            const [visionMode, setVisionMode] = useState('normal');
+            const [objectDistance, setObjectDistance] = useState(300); 
+            const [focalLength, setFocalLength] = useState(120);
             
-            {/* 1. Vision Mode Selector */}
-            <div className="space-y-3">
-              <label className="font-bold text-gray-700 flex items-center gap-2">
-                <ScanEye className="w-5 h-5" />
-                步驟一：選擇眼睛狀態
-              </label>
-              <div className="flex flex-col gap-2">
-                {Object.values(VISION_MODES).map((mode) => (
-                  <button
-                    key={mode.id}
-                    onClick={() => handleModeChange(mode.id)}
-                    className={`px-4 py-3 rounded-lg border-2 text-left transition-all ${
-                      visionMode === mode.id 
-                        ? `${mode.color} border-current shadow-sm` 
-                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="font-bold text-sm">{mode.label}</div>
-                    <div className="text-xs opacity-80 mt-1">{mode.description}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
+            // Fixed constants
+            const RETINA_DISTANCE = 200; 
+            const OPTICAL_AXIS_Y = 200;  
+            const LENS_X = 350;          
+            const LENS_RADIUS_Y = 70;    
+            
+            const canvasRef = useRef(null);
 
-            <div className="border-t border-gray-200 my-2"></div>
+            // Handle Mode Switch & Clamp Focal Length
+            const handleModeChange = (modeKey) => {
+                setVisionMode(modeKey);
+                const mode = VISION_MODES[modeKey];
+                
+                // Clamp current focal length to new limits
+                if (focalLength < mode.minF) setFocalLength(mode.minF);
+                if (focalLength > mode.maxF) setFocalLength(mode.maxF);
+            };
 
-            {/* 2. Object Distance Control */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="font-bold text-gray-700 flex items-center gap-2">
-                  <MoveHorizontal className="w-5 h-5" />
-                  步驟二：移動物體 (物距 u)
-                </label>
-                <span className="bg-gray-200 px-2 py-1 rounded text-sm font-mono">{objectDistance}mm</span>
-              </div>
-              <input 
-                type="range" 
-                min="150" 
-                max="600" 
-                value={objectDistance} 
-                onChange={(e) => setObjectDistance(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-              />
-              <div className="flex justify-between text-xs text-gray-500 px-1">
-                 <span>近處 (Near)</span>
-                 <span>遠處 (Far)</span>
-              </div>
-            </div>
+            // --- Physics Calculations ---
+            const calculateImage = () => {
+                const u = objectDistance;
+                const f = focalLength;
+                
+                let v = 0;
+                if (u === f) {
+                v = Infinity; 
+                } else {
+                v = (u * f) / (u - f);
+                }
+                
+                const m = -v / u;
+                return { v, m };
+            };
 
-            {/* 3. Focal Length Control */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="font-bold text-gray-700 flex items-center gap-2">
-                  <Maximize2 className="w-5 h-5" />
-                  步驟三：水晶體調焦 (焦距 f)
-                </label>
-                <span className={`px-2 py-1 rounded text-sm font-mono font-bold ${
-                    focalLength <= VISION_MODES[visionMode].minF || focalLength >= VISION_MODES[visionMode].maxF 
-                    ? 'bg-red-100 text-red-600' 
-                    : 'bg-gray-200'
-                }`}>
-                    {focalLength}mm
-                </span>
-              </div>
-              
-              <div className="relative pt-1">
-                <input 
-                    type="range" 
-                    min={VISION_MODES[visionMode].minF} 
-                    max={VISION_MODES[visionMode].maxF} 
-                    value={focalLength} 
-                    onChange={(e) => setFocalLength(Number(e.target.value))}
-                    className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${
-                        visionMode === 'myopia' ? 'accent-red-500 bg-red-100' :
-                        visionMode === 'hyperopia' ? 'accent-blue-500 bg-blue-100' :
-                        'accent-green-600 bg-gray-200'
-                    }`}
-                />
-                {/* Visual indicators for limits */}
-                {visionMode !== 'normal' && (
-                    <div className="absolute top-6 w-full text-center text-xs font-bold text-red-500">
-                        {visionMode === 'myopia' && "▲ 已達最薄極限 (無法對焦遠物)"}
-                        {visionMode === 'hyperopia' && "▲ 已達最厚極限 (無法對焦近物)"}
+            const imageInfo = calculateImage();
+            
+            // Determine Vision Status
+            let status = "";
+            let statusColor = "";
+            const tolerance = 5; 
+            
+            if (Math.abs(imageInfo.v - RETINA_DISTANCE) <= tolerance) {
+                status = "影像清晰 (Clear Vision)";
+                statusColor = "text-green-600";
+            } else if (imageInfo.v < RETINA_DISTANCE && imageInfo.v > 0) {
+                status = "成像於視網膜前 (Blurry)";
+                statusColor = "text-red-600";
+            } else if (imageInfo.v > RETINA_DISTANCE || imageInfo.v < 0) {
+                status = "成像於視網膜後 (Blurry)";
+                statusColor = "text-blue-600";
+            }
+
+            // --- Canvas Rendering ---
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+
+                ctx.clearRect(0, 0, width, height);
+                
+                const drawArrow = (fromX, fromY, toX, toY, color, width = 2) => {
+                ctx.beginPath();
+                ctx.moveTo(fromX, fromY);
+                ctx.lineTo(toX, toY);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width;
+                ctx.stroke();
+
+                const headlen = 10;
+                const angle = Math.atan2(toY - fromY, toX - fromX);
+                ctx.beginPath();
+                ctx.moveTo(toX, toY);
+                ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+                ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+                ctx.fillStyle = color;
+                ctx.fill();
+                };
+
+                const drawPoint = (x, y, label, color = "#333") => {
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.fillStyle = "#333";
+                ctx.font = "14px Arial";
+                ctx.fillText(label, x - 5, y + 20);
+                };
+
+                // 1. Draw Principal Axis
+                ctx.beginPath();
+                ctx.setLineDash([5, 5]);
+                ctx.moveTo(0, OPTICAL_AXIS_Y);
+                ctx.lineTo(width, OPTICAL_AXIS_Y);
+                ctx.strokeStyle = "#9CA3AF";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = "#6B7280";
+                ctx.fillText("主軸", 10, OPTICAL_AXIS_Y - 5);
+
+                // 2. Draw Eye Structure
+                ctx.beginPath();
+                ctx.arc(LENS_X + RETINA_DISTANCE/2, OPTICAL_AXIS_Y, RETINA_DISTANCE * 0.8, -0.5, Math.PI + 0.5, false);
+                ctx.strokeStyle = "#CBD5E1";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Retina
+                ctx.beginPath();
+                ctx.moveTo(LENS_X + RETINA_DISTANCE, OPTICAL_AXIS_Y - 100);
+                ctx.quadraticCurveTo(LENS_X + RETINA_DISTANCE - 20, OPTICAL_AXIS_Y, LENS_X + RETINA_DISTANCE, OPTICAL_AXIS_Y + 100);
+                ctx.strokeStyle = "#EF4444";
+                ctx.lineWidth = 4;
+                ctx.stroke();
+                ctx.fillStyle = "#EF4444";
+                ctx.font = "bold 14px Arial";
+                ctx.fillText("視網膜", LENS_X + RETINA_DISTANCE + 10, OPTICAL_AXIS_Y);
+
+                // 3. Draw Lens
+                const lensThickness = Math.max(10, 40 - (focalLength / 10));
+                ctx.beginPath();
+                ctx.ellipse(LENS_X, OPTICAL_AXIS_Y, lensThickness, LENS_RADIUS_Y, 0, 0, 2 * Math.PI);
+                ctx.fillStyle = "rgba(147, 197, 253, 0.5)";
+                ctx.fill();
+                ctx.strokeStyle = "#3B82F6";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                drawPoint(LENS_X, OPTICAL_AXIS_Y, "O", "#1D4ED8");
+                drawPoint(LENS_X + focalLength, OPTICAL_AXIS_Y, "F", "#9333EA");
+                drawPoint(LENS_X - focalLength, OPTICAL_AXIS_Y, "F'", "#9333EA");
+
+                // 4. Draw Object
+                const objHeight = 60;
+                const objX = LENS_X - objectDistance;
+                drawArrow(objX, OPTICAL_AXIS_Y, objX, OPTICAL_AXIS_Y - objHeight, "#10B981", 4);
+                ctx.fillStyle = "#10B981";
+                ctx.fillText("物體", objX - 15, OPTICAL_AXIS_Y + 20);
+
+                // 5. Ray Tracing
+                const rayColor = "rgba(234, 179, 8, 0.8)";
+                const rayYStart = OPTICAL_AXIS_Y - objHeight;
+                
+                // Ray 1: Parallel -> F
+                if (Math.abs(rayYStart - OPTICAL_AXIS_Y) <= LENS_RADIUS_Y) {
+                ctx.beginPath();
+                ctx.moveTo(objX, rayYStart);
+                ctx.lineTo(LENS_X, rayYStart);
+                const slope1 = (OPTICAL_AXIS_Y - rayYStart) / focalLength;
+                const endX1 = LENS_X + RETINA_DISTANCE + 50; 
+                const endY1 = rayYStart + slope1 * (endX1 - LENS_X);
+                ctx.lineTo(endX1, endY1);
+                ctx.strokeStyle = rayColor;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                }
+
+                // Ray 2: Through Center
+                ctx.beginPath();
+                ctx.moveTo(objX, rayYStart);
+                const slope2 = (OPTICAL_AXIS_Y - rayYStart) / (LENS_X - objX);
+                const endX2 = LENS_X + RETINA_DISTANCE + 50;
+                const endY2 = OPTICAL_AXIS_Y + slope2 * (endX2 - LENS_X);
+                ctx.lineTo(endX2, endY2);
+                ctx.strokeStyle = rayColor;
+                ctx.stroke();
+
+                // Ray 3: Through F' -> Parallel
+                if (objectDistance > 0) {
+                    const slope3 = (OPTICAL_AXIS_Y - rayYStart) / ((LENS_X - focalLength) - objX);
+                    const intersectLensY = rayYStart + slope3 * (LENS_X - objX);
+                    
+                    if (Math.abs(intersectLensY - OPTICAL_AXIS_Y) <= LENS_RADIUS_Y) {
+                    ctx.beginPath();
+                    ctx.moveTo(objX, rayYStart);
+                    ctx.lineTo(LENS_X, intersectLensY);
+                    ctx.lineTo(LENS_X + RETINA_DISTANCE + 50, intersectLensY);
+                    ctx.strokeStyle = rayColor;
+                    ctx.stroke();
+                    }
+                }
+
+                // 6. Image
+                const imgV = imageInfo.v;
+                const imgM = imageInfo.m;
+                
+                if (imgV > 0 && imgV !== Infinity) {
+                const imgX = LENS_X + imgV;
+                const imgH = objHeight * Math.abs(imgM);
+                
+                ctx.globalAlpha = 0.4;
+                drawArrow(imgX, OPTICAL_AXIS_Y, imgX, OPTICAL_AXIS_Y + imgH, "#6366F1");
+                ctx.fillText("實像", imgX, OPTICAL_AXIS_Y + imgH + 15);
+                ctx.globalAlpha = 1.0;
+                }
+
+                // 7. Retina Blur
+                const retinaX = LENS_X + RETINA_DISTANCE;
+                const slope1 = (OPTICAL_AXIS_Y - rayYStart) / focalLength;
+                const yAtRetina1 = rayYStart + slope1 * (retinaX - LENS_X);
+                const yAtRetina2 = OPTICAL_AXIS_Y + slope2 * (retinaX - LENS_X);
+                const blurRadius = Math.abs(yAtRetina1 - yAtRetina2);
+                
+                ctx.beginPath();
+                if (blurRadius < 2) {
+                    ctx.fillStyle = "#FFFF00";
+                    ctx.arc(retinaX, yAtRetina2, 3, 0, Math.PI*2);
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = "rgba(255, 255, 0, 0.3)";
+                    ctx.arc(retinaX, (yAtRetina1 + yAtRetina2)/2, blurRadius, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.strokeStyle = "#FFFF00";
+                    ctx.stroke();
+                }
+
+            }, [objectDistance, focalLength, imageInfo]);
+
+            return (
+                <div className="min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
+                <div className="max-w-6xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden">
+                    
+                    <div className="bg-indigo-600 p-6 text-white flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold flex items-center gap-2">
+                        <Eye className="w-8 h-8" />
+                        光學實驗室：眼睛與成像模擬
+                        </h1>
+                        <p className="text-indigo-100 mt-1">選擇不同視力模式，觀察對焦能力的差異。</p>
                     </div>
-                )}
-              </div>
+                    <div className="flex items-center gap-4 bg-indigo-700 px-4 py-2 rounded-lg">
+                        <div className="font-mono text-sm">
+                            <div>u (物距) = {objectDistance}mm</div>
+                            <div>f (焦距) = {focalLength}mm</div>
+                        </div>
+                    </div>
+                    </div>
 
-              <div className="flex justify-between text-xs text-gray-500 px-1 mt-4">
-                <span>變厚 (看近)</span>
-                <span>變薄 (看遠)</span>
-              </div>
-            </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
+                    
+                    {/* Left: Canvas */}
+                    <div className="lg:col-span-2 p-4 bg-gray-100 border-r border-gray-200 overflow-hidden flex flex-col items-center justify-center">
+                        <canvas 
+                            ref={canvasRef} 
+                            width={800} 
+                            height={400} 
+                            className="bg-white rounded shadow-sm w-full max-w-[800px]"
+                        />
+                        <div className="mt-4 text-center h-16">
+                            <h3 className={`text-xl font-bold ${statusColor}`}>
+                            {status}
+                            </h3>
+                            <p className="text-gray-500 text-sm mt-1">
+                            {Math.abs(imageInfo.v - RETINA_DISTANCE) <= 5 
+                                ? "大腦接收到清晰影像" 
+                                : "大腦接收到模糊影像"}
+                            </p>
+                        </div>
+                    </div>
 
-            {/* Info Tip */}
-            <div className="bg-yellow-50 p-3 rounded border border-yellow-200 text-sm text-yellow-800 flex gap-2">
-                <Info className="w-4 h-4 flex-shrink-0 mt-1" />
-                <p>
-                    <strong>操作挑戰：</strong>
-                    試著在「{VISION_MODES[visionMode].label.split(' ')[0]}」模式下，移動物體並調整焦距，找出看哪裡清楚、看哪裡模糊。
-                </p>
-            </div>
+                    {/* Right: Controls */}
+                    <div className="p-6 bg-white flex flex-col gap-6">
+                        
+                        {/* 1. Vision Mode Selector */}
+                        <div className="space-y-3">
+                        <label className="font-bold text-gray-700 flex items-center gap-2">
+                            <ScanEye className="w-5 h-5" />
+                            步驟一：選擇眼睛狀態
+                        </label>
+                        <div className="flex flex-col gap-2">
+                            {Object.values(VISION_MODES).map((mode) => (
+                            <button
+                                key={mode.id}
+                                onClick={() => handleModeChange(mode.id)}
+                                className={`px-4 py-3 rounded-lg border-2 text-left transition-all ${
+                                visionMode === mode.id 
+                                    ? `${mode.color} border-current shadow-sm` 
+                                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                }`}
+                            >
+                                <div className="font-bold text-sm">{mode.label}</div>
+                                <div className="text-xs opacity-80 mt-1">{mode.description}</div>
+                            </button>
+                            ))}
+                        </div>
+                        </div>
 
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+                        <div className="border-t border-gray-200 my-2"></div>
 
-export default EyeOpticsSim;
+                        {/* 2. Object Distance Control */}
+                        <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <label className="font-bold text-gray-700 flex items-center gap-2">
+                            <MoveHorizontal className="w-5 h-5" />
+                            步驟二：移動物體 (物距 u)
+                            </label>
+                            <span className="bg-gray-200 px-2 py-1 rounded text-sm font-mono">{objectDistance}mm</span>
+                        </div>
+                        <input 
+                            type="range" 
+                            min="150" 
+                            max="600" 
+                            value={objectDistance} 
+                            onChange={(e) => setObjectDistance(Number(e.target.value))}
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                        />
+                        <div className="flex justify-between text-xs text-gray-500 px-1">
+                            <span>近處 (Near)</span>
+                            <span>遠處 (Far)</span>
+                        </div>
+                        </div>
+
+                        {/* 3. Focal Length Control */}
+                        <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <label className="font-bold text-gray-700 flex items-center gap-2">
+                            <Maximize2 className="w-5 h-5" />
+                            步驟三：水晶體調焦 (焦距 f)
+                            </label>
+                            <span className={`px-2 py-1 rounded text-sm font-mono font-bold ${
+                                focalLength <= VISION_MODES[visionMode].minF || focalLength >= VISION_MODES[visionMode].maxF 
+                                ? 'bg-red-100 text-red-600' 
+                                : 'bg-gray-200'
+                            }`}>
+                                {focalLength}mm
+                            </span>
+                        </div>
+                        
+                        <div className="relative pt-1">
+                            <input 
+                                type="range" 
+                                min={VISION_MODES[visionMode].minF} 
+                                max={VISION_MODES[visionMode].maxF} 
+                                value={focalLength} 
+                                onChange={(e) => setFocalLength(Number(e.target.value))}
+                                className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${
+                                    visionMode === 'myopia' ? 'accent-red-500 bg-red-100' :
+                                    visionMode === 'hyperopia' ? 'accent-blue-500 bg-blue-100' :
+                                    'accent-green-600 bg-gray-200'
+                                }`}
+                            />
+                            {/* Visual indicators for limits */}
+                            {visionMode !== 'normal' && (
+                                <div className="absolute top-6 w-full text-center text-xs font-bold text-red-500">
+                                    {visionMode === 'myopia' && "▲ 已達最薄極限 (無法對焦遠物)"}
+                                    {visionMode === 'hyperopia' && "▲ 已達最厚極限 (無法對焦近物)"}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex justify-between text-xs text-gray-500 px-1 mt-4">
+                            <span>變厚 (看近)</span>
+                            <span>變薄 (看遠)</span>
+                        </div>
+                        </div>
+
+                        {/* Info Tip */}
+                        <div className="bg-yellow-50 p-3 rounded border border-yellow-200 text-sm text-yellow-800 flex gap-2">
+                            <Info className="w-4 h-4 flex-shrink-0 mt-1" />
+                            <p>
+                                <strong>操作挑戰：</strong>
+                                試著在「{VISION_MODES[visionMode].label.split(' ')[0]}」模式下，移動物體並調整焦距，找出看哪裡清楚、看哪裡模糊。
+                            </p>
+                        </div>
+
+                    </div>
+                    </div>
+                </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<EyeOpticsSim />);
+    </script>
+</body>
+</html>
